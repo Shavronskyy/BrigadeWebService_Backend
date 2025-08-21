@@ -1,11 +1,21 @@
+using BrigadeWebService_BLL.Mapper.Vacancies;
 using BrigadeWebService_BLL.Services.Interfaces;
+using BrigadeWebService_BLL.Services.Realizations;
 using BrigadeWebService_DAL.Data;
+using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
+using BrigadeWebService_DAL.Repositories.Realizations.Vacancies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Scan a specific assembly that contains your Profiles
+builder.Services.AddAutoMapper(typeof(VacancyProfile));
 
 // 1) DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -53,6 +63,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// services
+builder.Services.AddTransient<IVacanciesService, VacanciesService>();
+
+// Repository
+builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
 
 var app = builder.Build();
 

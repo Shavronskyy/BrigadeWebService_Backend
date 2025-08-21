@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
 using BrigadeWebService_BLL.Dto.Vacancies;
+using BrigadeWebService_BLL.Services.Interfaces;
 using BrigadeWebService_DAL.Entities;
 using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrigadeWebService_BLL.Services.Realizations
 {
-    public class VacanciesService
+    public class VacanciesService : IVacanciesService
     {
-        private IVacancyRepository _vacancyRepository;
-        private IMapper _mapper;
+        private readonly IVacancyRepository _vacancyRepository;
+        private readonly IMapper _mapper;
 
-        public VacanciesService(IServiceProvider serviceProvider, IMapper mapper)
+        public VacanciesService(IVacancyRepository vacancyRepository, IMapper mapper)
         {
-            _vacancyRepository = serviceProvider.GetRequiredService<IVacancyRepository>();
+            _vacancyRepository = vacancyRepository;
             _mapper = mapper;
         }
 
