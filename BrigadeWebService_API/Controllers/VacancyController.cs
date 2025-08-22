@@ -44,7 +44,7 @@ namespace BrigadeWebService_API.Controllers
             return updatedVacancy != null ? Ok(updatedVacancy) : NotFound("Vacancy not found");
         }
 
-        [HttpDelete("api/deleteVacancy/{id}")]
+        [HttpDelete("deleteVacancy/{id}")]
         public async Task<IActionResult> DeleteVacancy(int id)
         {
             if (id <= 0)

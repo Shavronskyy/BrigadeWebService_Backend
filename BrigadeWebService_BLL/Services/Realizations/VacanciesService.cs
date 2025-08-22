@@ -3,7 +3,6 @@ using BrigadeWebService_BLL.Dto.Vacancies;
 using BrigadeWebService_BLL.Services.Interfaces;
 using BrigadeWebService_DAL.Entities;
 using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BrigadeWebService_BLL.Services.Realizations
 {
@@ -40,15 +39,11 @@ namespace BrigadeWebService_BLL.Services.Realizations
             var vacancy = await _vacancyRepository.GetById(model.Id);
             if(vacancy == null)
             {
-                throw new InvalidOperationException("Vacancy not found");
+                throw new InvalidOperationException($"Вакансія {model.Title} не знайдена!");
             }
-            var updatedVacancy = _vacancyRepository.Update(vacancy);
-            if (updatedVacancy != null)
-            {
-                await _vacancyRepository.SaveChangesAsync();
-                return updatedVacancy;
-            }
-            return null;
+            _mapper.Map(model, vacancy);
+
+            return await _vacancyRepository.SaveChangesAsync() == 1 ? vacancy : null;
         }
 
         public async Task<bool> DeleteAsync(int id)
