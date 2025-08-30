@@ -1,15 +1,15 @@
 using BrigadeWebService_BLL.Mapper.Vacancies;
+using BrigadeWebService_BLL.Options;
 using BrigadeWebService_BLL.Services.Interfaces;
 using BrigadeWebService_BLL.Services.Realizations;
 using BrigadeWebService_DAL.Data;
+using BrigadeWebService_DAL.Repositories.Interfaces.Reports;
 using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
 using BrigadeWebService_DAL.Repositories.Realizations.Vacancies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +47,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // 3) Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// 4) CORS
+// services (existing)
+builder.Services.AddTransient<IVacanciesService, VacanciesService>();
+builder.Services.AddTransient<IReportsService, ReportsService>();
+
+// Repository (existing)
+builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
 // 4) CORS - Most permissive for testing
 builder.Services.AddCors(options =>
 {
@@ -64,11 +71,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// services
-builder.Services.AddTransient<IVacanciesService, VacanciesService>();
-
-// Repository
-builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
+// NEW: Upload options (uploads to wwwroot/uploads/…)
+builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
 
 var app = builder.Build();
 
@@ -77,6 +81,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// NEW: serve static files from wwwroot (for /uploads/…)
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -84,5 +91,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+// NEW: make sure wwwroot exists
+var webRoot = app.Environment.WebRootPath ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+Directory.CreateDirectory(webRoot);
 
 app.Run();
