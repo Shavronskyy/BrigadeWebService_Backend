@@ -58,10 +58,11 @@ namespace BrigadeWebService_API.Controllers
         }
 
         [HttpPost("{id:int}/image")]
-        [RequestSizeLimit(15_000_000)] // запас над MaxSizeBytes
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(15_000_000)]
         public async Task<IActionResult> UploadImage(
     int id,
-    [FromForm] IFormFile file,
+    IFormFile file, // ← без [FromForm]
     [FromServices] IOptions<UploadOptions> options,
     [FromServices] IWebHostEnvironment env)
         {
@@ -75,16 +76,14 @@ namespace BrigadeWebService_API.Controllers
             if (!o.AllowedExtensions.Contains(ext))
                 return BadRequest("Unsupported file type");
 
-            // Переконаймося, що звіт існує
             var report = (await _reportService.GetAllReportsAsync()).FirstOrDefault(r => r.Id == id);
             if (report == null) return NotFound("Report not found");
 
-            // Папка призначення: wwwroot/<BaseFolder>/yyyy/MM/{guid}.ext
             var yyyy = DateTime.UtcNow.Year.ToString("D4");
             var mm = DateTime.UtcNow.Month.ToString("D2");
 
             var webRoot = env.WebRootPath ?? Path.Combine(env.ContentRootPath, "wwwroot");
-            var relativeDir = Path.Combine(o.BaseFolder, yyyy, mm); // uploads/reports/2025/08
+            var relativeDir = Path.Combine(o.BaseFolder, yyyy, mm); // uploads/reports/2025/09
             var absDir = Path.Combine(webRoot, relativeDir);
             Directory.CreateDirectory(absDir);
 
@@ -93,10 +92,10 @@ namespace BrigadeWebService_API.Controllers
             await using (var stream = new FileStream(absPath, FileMode.Create))
                 await file.CopyToAsync(stream);
 
-            var relativeUrl = "/" + Path.Combine(relativeDir, fileName).Replace('\\', '/'); // /uploads/reports/2025/08/xxxx.webp
+            var relativeUrl = "/" + Path.Combine(relativeDir, fileName).Replace('\\', '/');
 
-            // (опц.) видалити попереднє зображення, якщо було і воно з /uploads/
-            if (!string.IsNullOrWhiteSpace(report.Img) && report.Img.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(report.Img) &&
+                report.Img.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             {
                 var oldAbs = Path.Combine(webRoot, report.Img.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
                 if (System.IO.File.Exists(oldAbs))
@@ -108,6 +107,7 @@ namespace BrigadeWebService_API.Controllers
             var ok = await _reportService.UpdateImageAsync(id, relativeUrl);
             return ok ? Ok(new { url = relativeUrl }) : BadRequest("Failed to save image path");
         }
+
 
         [HttpDelete("{id:int}/image")]
         public async Task<IActionResult> DeleteImage(
