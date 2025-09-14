@@ -10,12 +10,23 @@ import Vacancies from "./components/Vacancies";
 import Login from "./components/Login";
 import Admin from "./components/Admin";
 import "./App.css";
+import mainBackImage from "./img/backgrounds/Home/main-back.jpg";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App">
+        <div
+          className="App"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${mainBackImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+            minHeight: "100vh",
+          }}
+        >
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
-import { reportsApiService, Report } from "../services/reportsApi";
+import { reportsApiService } from "../services/reportsApi";
+import mainBackImage from "../img/backgrounds/Home/main-back.jpg";
 
 interface ReportDisplay {
   id: number;
@@ -14,6 +15,7 @@ interface ReportDisplay {
 }
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedReport, setSelectedReport] = useState<ReportDisplay | null>(
     null
   );
@@ -67,62 +69,41 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-page">
-      <div className="hero-section">
+      <div
+        className="hero-section"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${mainBackImage})`,
+        }}
+      >
         <div className="hero-content">
-          <h1>Військова Бригада</h1>
-          <p>Захищаємо нашу землю та свободу</p>
-          <Link to="/reports" className="hero-btn">
-            Переглянути всі звіти
-          </Link>
+          <h1>АРСЕНАЛ</h1>
+          <div className="hero-actions">
+            <div className="hero-left">
+              <button
+                className="hero-btn"
+                onClick={() => navigate("/vacancies")}
+              >
+                Приєднуйся до нас!
+              </button>
+            </div>
+            <div className="hero-right">
+              <button className="hero-btn">Підтримати</button>
+            </div>
+          </div>
+          <div
+            className="scroll-indicator"
+            onClick={() => {
+              const nextSection = document.querySelector(".content-section");
+              nextSection?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <div className="scroll-arrow">↓</div>
+          </div>
         </div>
       </div>
 
       <div className="content-section">
         <div className="container">
-          <section className="about-section">
-            <h2>Про нас</h2>
-            <p>
-              Наша бригада - це професійне військове формування, яке виконує
-              завдання з захисту територіальної цілісності та суверенітету
-              України. Ми складаємося з досвідчених бійців, які пройшли навчання
-              за найвищими стандартами сучасного військового мистецтва.
-            </p>
-          </section>
-
-          <section className="tasks-section">
-            <h2>Наші завдання</h2>
-            <div className="tasks-grid">
-              <div className="task-card">
-                <h3>Оборона території</h3>
-                <p>
-                  Захист населених пунктів та стратегічних об'єктів від ворожих
-                  дій
-                </p>
-              </div>
-              <div className="task-card">
-                <h3>Гуманітарна допомога</h3>
-                <p>Надання допомоги цивільному населенню в зоні бойових дій</p>
-              </div>
-              <div className="task-card">
-                <h3>Відновлення інфраструктури</h3>
-                <p>
-                  Роботи з відновлення життєво важливих систем населених пунктів
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="activity-section">
-            <h2>Сфера діяльності</h2>
-            <p>
-              Наша бригада діє в різних напрямках: від безпосередніх бойових
-              операцій до гуманітарних місій та відновлення інфраструктури. Ми
-              працюємо в тісній координації з місцевою владою та міжнародними
-              організаціями для забезпечення максимальної ефективності наших
-              дій.
-            </p>
-          </section>
-
           <section className="reports-section">
             <div className="section-header">
               <h2>Останні звіти</h2>
@@ -133,9 +114,9 @@ const Home: React.FC = () => {
             {loading ? (
               <div className="loading">Завантаження звітів...</div>
             ) : error ? (
-              <div className="error">{error}</div>
+              <div className="no-reports">Наразі немає відкритих вакансій</div>
             ) : lastReports.length === 0 ? (
-              <div className="no-reports">Ви ще не додали жодного звіту</div>
+              <div className="no-reports">Наразі немає звітів</div>
             ) : (
               <div className="reports-grid">
                 {lastReports.map((report) => (

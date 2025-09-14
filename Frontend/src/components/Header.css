@@ -1,10 +1,11 @@
 .header {
-  background: var(--header-bg);
-  box-shadow: 0 5px 25px var(--shadow-green);
+  background: transparent;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 2px solid var(--border-primary);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .header-container {
@@ -31,12 +32,14 @@
 }
 
 .logo-image {
-  height: 100px;
+  height: 120px;
   width: auto;
-  max-width: 300px;
+  max-width: 350px;
   object-fit: contain;
   transition: transform 0.3s ease;
   pointer-events: none;
+  display: block;
+  transform: scale(1.1);
 }
 
 .logo-image text {
@@ -102,7 +105,7 @@
 }
 
 .nav-link {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-decoration: none;
   font-size: 16px;
   font-weight: 600;
@@ -116,10 +119,10 @@
 }
 
 .nav-link:hover {
-  background-color: var(--military-green);
+  background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px var(--shadow-green);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
 .login-link {
@@ -148,11 +151,11 @@
 }
 
 .admin-link:hover {
-  background: var(--military-green);
-  border-color: var(--border-primary);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
   color: var(--text-primary);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px var(--shadow-green);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
 .logout-btn {
@@ -168,8 +171,10 @@
 }
 
 .logout-btn:hover {
-  background: #c82333;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
 .nav-link:active {
@@ -187,8 +192,9 @@
   }
 
   .logo-image {
-    height: 75px;
-    max-width: 240px;
+    height: 90px;
+    max-width: 280px;
+    min-width: 150px;
   }
 
   .brigade-name {

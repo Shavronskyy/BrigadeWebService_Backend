@@ -64,15 +64,7 @@ const Header: React.FC = () => {
           </ul>
 
           <div className="auth-buttons">
-            {!isAuthenticated ? (
-              <Link
-                to="/login"
-                className="nav-link login-link"
-                onClick={closeMenu}
-              >
-                Вхід
-              </Link>
-            ) : (
+            {isAuthenticated && (
               <>
                 {isAdmin && (
                   <Link
