@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Vacancies.css";
 import { vacanciesApiService, Vacancy } from "../services/vacanciesApi";
+import vacanciesBackImage from "../img/backgrounds/Vacancies/Vacancies-back.jpg";
+import Footer from "./Footer";
 
 const Vacancies: React.FC = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -22,49 +24,20 @@ const Vacancies: React.FC = () => {
   }, []);
 
   return (
-    <div className="vakansii-page">
-      <div className="page-header">
-        <div className="container">
-          <h1>Вакансії</h1>
-          <p>Приєднуйтесь до нашої бригади та захищайте Батьківщину</p>
-        </div>
-      </div>
-
+    <div
+      className="vakansii-page"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${vacanciesBackImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        minHeight: "100vh",
+      }}
+    >
       <div className="content-section">
         <div className="container">
-          <div className="vacancy-intro">
-            <h2>Чому варто служити в нашій бригаді?</h2>
-            <div className="benefits-grid">
-              <div className="benefit-card">
-                <div className="benefit-icon">🎖️</div>
-                <h3>Професійний розвиток</h3>
-                <p>
-                  Можливості для кар'єрного росту та отримання нових навичок
-                </p>
-              </div>
-              <div className="benefit-card">
-                <div className="benefit-icon">💰</div>
-                <h3>Гарна оплата</h3>
-                <p>
-                  Конкурентна зарплата та додаткові виплати за особливі умови
-                </p>
-              </div>
-              <div className="benefit-card">
-                <div className="benefit-icon">🏠</div>
-                <h3>Соціальні гарантії</h3>
-                <p>
-                  Повне забезпечення та соціальний пакет для військовослужбовців
-                </p>
-              </div>
-              <div className="benefit-card">
-                <div className="benefit-icon">👥</div>
-                <h3>Командна робота</h3>
-                <p>Дружній колектив та підтримуюча атмосфера</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="vacancies-list">
+          <div className="vacancies-block">
             <h2>Відкриті вакансії</h2>
 
             {loading ? (
@@ -121,29 +94,9 @@ const Vacancies: React.FC = () => {
               ))
             )}
           </div>
-
-          <div className="application-section">
-            <h2>Як подати заявку?</h2>
-            <div className="application-steps">
-              <div className="step">
-                <div className="step-number">1</div>
-                <h3>Заповніть форму</h3>
-                <p>Надішліть своє резюме та коротке мотиваційне письмо</p>
-              </div>
-              <div className="step">
-                <div className="step-number">2</div>
-                <h3>Співбесіда</h3>
-                <p>Пройдіть співбесіду з командуванням та медичну комісію</p>
-              </div>
-              <div className="step">
-                <div className="step-number">3</div>
-                <h3>Прийняття на службу</h3>
-                <p>Отримайте призначення та приєднуйтесь до бригади</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

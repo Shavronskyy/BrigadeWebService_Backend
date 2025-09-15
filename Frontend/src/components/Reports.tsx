@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Reports.css";
 import { reportsApiService, Report } from "../services/reportsApi";
+import reportsBackImage from "../img/backgrounds/Contacts/Contacts-back.jpg";
+import Footer from "./Footer";
 
 interface ReportDisplay {
   id: number;
@@ -64,44 +66,53 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <div className="reports-page">
-      <div className="page-header">
-        <div className="header-content">
-          <h1>Волонтерські звіти</h1>
-          <p>Інформація про гуманітарну допомогу та волонтерську діяльність</p>
-        </div>
-      </div>
-
+    <div
+      className="reports-page"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${reportsBackImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        minHeight: "100vh",
+      }}
+    >
       <div className="content-section">
-        {loading ? (
-          <div className="loading">Завантаження звітів...</div>
-        ) : error ? (
-          <div className="error">{error}</div>
-        ) : reports.length === 0 ? (
-          <div className="no-reports">Ви ще не додали жодного звіту</div>
-        ) : (
-          <div className="reports-grid">
-            {reports.map((report) => (
-              <div
-                key={report.id}
-                className="report-card"
-                onClick={() => openModal(report)}
-              >
-                <div className="report-photo">
-                  <img src={report.photo} alt={report.title} />
-                </div>
-                <div className="report-content">
-                  <h3>{report.title}</h3>
-                  <p className="report-short-text">{report.shortText}</p>
-                  <div className="report-meta">
-                    <span className="report-category">{report.category}</span>
-                    <span className="report-date">{report.date}</span>
+        <div className="container">
+          <div className="reports-block">
+            <h2>Волонтерські звіти</h2>
+
+            {loading ? (
+              <div className="loading">Завантаження звітів...</div>
+            ) : reports.length === 0 ? (
+              <div className="no-reports">Наразі немає звітів</div>
+            ) : (
+              <div className="reports-grid">
+                {reports.map((report) => (
+                  <div
+                    key={report.id}
+                    className="report-card"
+                    onClick={() => openModal(report)}
+                  >
+                    <div className="report-photo">
+                      <img src={report.photo} alt={report.title} />
+                    </div>
+                    <div className="report-content">
+                      <h3>{report.title}</h3>
+                      <p className="report-short-text">{report.shortText}</p>
+                      <div className="report-meta">
+                        <span className="report-category">
+                          {report.category}
+                        </span>
+                        <span className="report-date">{report.date}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Modal */}
@@ -133,6 +144,7 @@ const Reports: React.FC = () => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 };

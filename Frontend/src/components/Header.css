@@ -1,7 +1,7 @@
 .header {
   background: transparent;
   backdrop-filter: blur(15px);
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -15,7 +15,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  min-height: 70px;
+  min-height: 46px;
   position: relative;
 }
 
@@ -32,9 +32,9 @@
 }
 
 .logo-image {
-  height: 120px;
+  height: 70px;
   width: auto;
-  max-width: 350px;
+  max-width: 280px;
   object-fit: contain;
   transition: transform 0.3s ease;
   pointer-events: none;
@@ -177,6 +177,24 @@
   box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
+.support-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.support-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
 .nav-link:active {
   transform: translateY(0);
 }
@@ -192,9 +210,9 @@
   }
 
   .logo-image {
-    height: 90px;
-    max-width: 280px;
-    min-width: 150px;
+    height: 55px;
+    max-width: 220px;
+    min-width: 100px;
   }
 
   .brigade-name {

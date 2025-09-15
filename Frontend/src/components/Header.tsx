@@ -64,6 +64,13 @@ const Header: React.FC = () => {
           </ul>
 
           <div className="auth-buttons">
+            <Link
+              to="/contacts"
+              className="nav-link support-btn"
+              onClick={closeMenu}
+            >
+              Підтримати
+            </Link>
             {isAuthenticated && (
               <>
                 {isAdmin && (

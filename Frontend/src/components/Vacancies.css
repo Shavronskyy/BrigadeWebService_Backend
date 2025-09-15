@@ -1,19 +1,10 @@
 .vakansii-page {
   min-height: 100vh;
-  background: var(--bg-primary);
-  position: relative;
-}
-
-.vakansii-page::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="military-pattern" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23333" opacity="0.3"/><circle cx="75" cy="75" r="1" fill="%23333" opacity="0.3"/><circle cx="50" cy="10" r="0.5" fill="%23333" opacity="0.3"/><circle cx="10" cy="60" r="0.5" fill="%23333" opacity="0.3"/><circle cx="90" cy="40" r="0.5" fill="%23333" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23military-pattern)"/></svg>');
-  pointer-events: none;
-  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: transparent;
 }
 
 .page-header {
@@ -21,7 +12,7 @@
   color: var(--text-primary);
   padding: 80px 0;
   text-align: center;
-  border-bottom: 2px solid var(--border-primary);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -59,10 +50,14 @@
 }
 
 .content-section {
-  padding: 80px 0;
-  background-color: var(--bg-primary);
+  padding: 100px 0 80px 0;
+  background: transparent !important;
   position: relative;
   z-index: 2;
+}
+
+.content-section * {
+  background: transparent !important;
 }
 
 .container {
@@ -72,16 +67,43 @@
 }
 
 .vacancy-intro h2,
-.vacancies-list h2,
-.application-section h2 {
-  text-align: center;
-  font-size: 2.8rem;
-  margin-bottom: 50px;
-  color: var(--text-primary);
+.vacancies-block {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
   position: relative;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 700;
+  height: fit-content;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.vacancies-block h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #ffffff;
+  position: relative;
+  background: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.5px;
+  border-left: none;
+  padding-left: 0;
+}
+
+.vacancies-block h2::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 2px;
 }
 
 .vacancy-intro h2::after,
@@ -112,35 +134,15 @@
   box-shadow: 0 15px 35px var(--shadow-green);
   text-align: center;
   transition: all 0.4s ease;
-  border: 2px solid var(--border-primary);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
-}
-
-.benefit-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(85, 107, 47, 0.1),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.benefit-card:hover::before {
-  left: 100%;
 }
 
 .benefit-card:hover {
   transform: translateY(-15px) scale(1.02);
   box-shadow: 0 25px 50px var(--hover-shadow);
-  border-color: var(--hover-border);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .benefit-icon {
@@ -165,40 +167,26 @@
 /* Loading and no-vacancies styles are defined at the bottom of the file */
 
 .vacancy-item {
-  background: linear-gradient(145deg, #2a2a2a 0%, #3a3a3a 100%);
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(85, 107, 47, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
   margin-bottom: 35px;
   overflow: hidden;
   transition: all 0.4s ease;
-  border: 2px solid #556b2f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
-}
-
-.vacancy-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #556b2f, #8b4513, #556b2f);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+  backdrop-filter: blur(20px);
 }
 
 .vacancy-item:hover {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 0 25px 50px rgba(85, 107, 47, 0.4);
-  border-color: #8b4513;
-}
-
-.vacancy-item:hover::before {
-  transform: scaleX(1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .vacancy-header {
-  background: linear-gradient(135deg, #556b2f 0%, #8b4513 100%);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
   padding: 30px 35px;
   display: flex;
@@ -206,6 +194,7 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .vacancy-header::after {
@@ -387,20 +376,8 @@
 }
 
 @media (max-width: 768px) {
-  .page-header h1 {
-    font-size: 2.2rem;
-  }
-
-  .page-header p {
-    font-size: 1.1rem;
-  }
-
-  .page-header {
-    padding: 50px 0;
-  }
-
   .content-section {
-    padding: 50px 0;
+    padding: 80px 0 40px 0;
   }
 
   .vacancy-intro h2,
@@ -472,19 +449,24 @@
   text-align: center;
   padding: 80px 20px;
   font-size: 1.3rem;
-  border-radius: 15px;
+  border-radius: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
   position: relative;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
 }
 
 .loading {
   color: #ffffff;
-  background: linear-gradient(145deg, #2a2a2a 0%, #3a3a3a 100%);
-  border: 2px solid #556b2f;
-  box-shadow: 0 10px 30px rgba(85, 107, 47, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
 }
 
 .loading::before {

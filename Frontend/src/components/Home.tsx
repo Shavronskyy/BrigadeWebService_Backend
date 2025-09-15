@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import { reportsApiService } from "../services/reportsApi";
 import mainBackImage from "../img/backgrounds/Home/main-back.jpg";
+import Footer from "./Footer";
 
 interface ReportDisplay {
   id: number;
@@ -175,6 +176,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 };
