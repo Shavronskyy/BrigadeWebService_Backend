@@ -65,7 +65,7 @@ const Header: React.FC = () => {
 
           <div className="auth-buttons">
             <Link
-              to="/contacts"
+              to="/support"
               className="nav-link support-btn"
               onClick={closeMenu}
             >

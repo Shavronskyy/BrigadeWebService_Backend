@@ -10,10 +10,6 @@ interface VacancyFormData {
   title: string;
   description: string;
   contactPhone: string;
-  requirements: string[];
-  salary: string;
-  employmentType: string;
-  educationLevel: string;
 }
 
 const AdminVacancies: React.FC = () => {
@@ -39,10 +35,6 @@ const AdminVacancies: React.FC = () => {
     title: "",
     description: "",
     contactPhone: "",
-    requirements: [""],
-    salary: "",
-    employmentType: "",
-    educationLevel: "",
   });
 
   // Fetch vacancies from API
@@ -71,10 +63,6 @@ const AdminVacancies: React.FC = () => {
         title: vacancy.title,
         description: vacancy.description,
         contactPhone: vacancy.contactPhone,
-        requirements: [...(vacancy.requirements || [])],
-        salary: vacancy.salary,
-        employmentType: vacancy.employmentType,
-        educationLevel: vacancy.educationLevel,
       });
     } else {
       setEditingVacancy(null);
@@ -82,10 +70,6 @@ const AdminVacancies: React.FC = () => {
         title: "",
         description: "",
         contactPhone: "",
-        requirements: [""],
-        salary: "",
-        employmentType: "",
-        educationLevel: "",
       });
     }
     setIsModalOpen(true);
@@ -98,10 +82,6 @@ const AdminVacancies: React.FC = () => {
       title: "",
       description: "",
       contactPhone: "",
-      requirements: [""],
-      salary: "",
-      employmentType: "",
-      educationLevel: "",
     });
   };
 
@@ -119,34 +99,8 @@ const AdminVacancies: React.FC = () => {
     }
   };
 
-  const handleRequirementChange = (index: number, value: string) => {
-    const newRequirements = [...formData.requirements];
-    newRequirements[index] = value;
-    setFormData((prev) => ({ ...prev, requirements: newRequirements }));
-  };
-
-  const addRequirement = () => {
-    setFormData((prev) => ({
-      ...prev,
-      requirements: [...prev.requirements, ""],
-    }));
-  };
-
-  const removeRequirement = (index: number) => {
-    if (formData.requirements.length > 1) {
-      const newRequirements = formData.requirements.filter(
-        (_, i) => i !== index
-      );
-      setFormData((prev) => ({ ...prev, requirements: newRequirements }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const filteredRequirements = formData.requirements.filter(
-      (req) => req.trim() !== ""
-    );
 
     try {
       if (editingVacancy) {
@@ -154,7 +108,10 @@ const AdminVacancies: React.FC = () => {
         const updatedVacancy: VacancyCreateModel = {
           id: editingVacancy.id,
           ...formData,
-          requirements: filteredRequirements,
+          requirements: [],
+          salary: "",
+          employmentType: "",
+          educationLevel: "",
           postedDate: editingVacancy.postedDate,
         };
         const result = await vacanciesApiService.updateVacancy(updatedVacancy);
@@ -166,7 +123,10 @@ const AdminVacancies: React.FC = () => {
         // Create new vacancy
         const newVacancy: VacancyCreateModel = {
           ...formData,
-          requirements: filteredRequirements,
+          requirements: [],
+          salary: "",
+          employmentType: "",
+          educationLevel: "",
           postedDate: new Date().toISOString(),
         };
         const result = await vacanciesApiService.createVacancy(newVacancy);
@@ -251,9 +211,8 @@ const AdminVacancies: React.FC = () => {
             <thead>
               <tr>
                 <th>Назва</th>
-                <th>Тип зайнятості</th>
-                <th>Зарплата</th>
-                <th>Освіта</th>
+                <th>Опис</th>
+                <th>Контактний телефон</th>
                 <th>Дата публікації</th>
                 <th>Дії</th>
               </tr>
@@ -261,17 +220,20 @@ const AdminVacancies: React.FC = () => {
             <tbody>
               {vacancies.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="no-data">
+                  <td colSpan={5} className="no-data">
                     Ви ще не додали жодної вакансії
                   </td>
                 </tr>
               ) : (
                 vacancies.map((vacancy) => (
                   <tr key={vacancy.id}>
-                    <td>{vacancy.title}</td>
-                    <td>{vacancy.employmentType}</td>
-                    <td>{vacancy.salary}</td>
-                    <td>{vacancy.educationLevel}</td>
+                    <td className="vacancy-title-cell">{vacancy.title}</td>
+                    <td className="vacancy-description-cell">
+                      {vacancy.description.length > 100
+                        ? `${vacancy.description.substring(0, 100)}...`
+                        : vacancy.description}
+                    </td>
+                    <td>{vacancy.contactPhone}</td>
                     <td>
                       {new Date(vacancy.postedDate).toLocaleDateString("uk-UA")}
                     </td>
@@ -315,69 +277,28 @@ const AdminVacancies: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="vacancy-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="title">Назва вакансії *</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="employmentType">Тип зайнятості *</label>
-                  <select
-                    id="employmentType"
-                    name="employmentType"
-                    value={formData.employmentType}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Виберіть тип</option>
-                    <option value="Контрактна служба">Контрактна служба</option>
-                    <option value="Мобілізація">Мобілізація</option>
-                    <option value="Добровольча служба">
-                      Добровольча служба
-                    </option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label htmlFor="title">Назва вакансії *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="salary">Зарплата *</label>
-                  <input
-                    type="text"
-                    id="salary"
-                    name="salary"
-                    value={formData.salary}
-                    onChange={handleInputChange}
-                    placeholder="Наприклад: 15000 грн"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="educationLevel">Рівень освіти *</label>
-                  <select
-                    id="educationLevel"
-                    name="educationLevel"
-                    value={formData.educationLevel}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Виберіть рівень</option>
-                    <option value="Середня">Середня</option>
-                    <option value="Середня спеціальна">
-                      Середня спеціальна
-                    </option>
-                    <option value="Вища">Вища</option>
-                    <option value="Вища військова">Вища військова</option>
-                    <option value="Вища медична">Вища медична</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label htmlFor="description">Опис вакансії *</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={6}
+                  required
+                />
               </div>
 
               <div className="form-group">
@@ -391,49 +312,6 @@ const AdminVacancies: React.FC = () => {
                   placeholder="+380XXXXXXXXX"
                   required
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">Опис вакансії *</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Вимоги до кандидата</label>
-                {formData.requirements.map((req, index) => (
-                  <div key={index} className="requirement-row">
-                    <input
-                      type="text"
-                      value={req}
-                      onChange={(e) =>
-                        handleRequirementChange(index, e.target.value)
-                      }
-                      placeholder="Введіть вимогу"
-                    />
-                    <button
-                      type="button"
-                      className="remove-req-btn"
-                      onClick={() => removeRequirement(index)}
-                      disabled={formData.requirements.length === 1}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="add-req-btn"
-                  onClick={addRequirement}
-                >
-                  + Додати вимогу
-                </button>
               </div>
 
               <div className="form-actions">

@@ -1,0 +1,7 @@
+This directory contains campaign images.
+Place your campaign images here:
+- campaign1.jpg
+- campaign2.jpg
+- etc.
+
+For now, you can use any image URLs in the admin panel.

@@ -1,4 +1,4 @@
-.admin-vacancies {
+.admin-campaigns {
   width: 100%;
   background: linear-gradient(
     135deg,
@@ -10,7 +10,7 @@
   position: relative;
 }
 
-.admin-vacancies::before {
+.admin-campaigns::before {
   content: "";
   position: fixed;
   top: 0;
@@ -134,7 +134,7 @@
 }
 
 /* Table Styles */
-.vacancies-table {
+.campaigns-table {
   overflow-x: auto;
   border-radius: 12px;
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
@@ -142,12 +142,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   width: 100%;
-  min-width: 2400px;
+  min-width: 1600px;
 }
 
 table {
   width: 100%;
-  min-width: 2400px;
+  min-width: 1600px;
   border-collapse: collapse;
   background: transparent;
   border: none;
@@ -156,7 +156,7 @@ table {
 
 th,
 td {
-  padding: 35px 50px;
+  padding: 25px 30px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -166,12 +166,12 @@ td {
 
 th:nth-child(1),
 td:nth-child(1) {
-  width: 25%;
+  width: 15%;
 }
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 45%;
+  width: 35%;
 }
 
 th:nth-child(3),
@@ -186,7 +186,12 @@ td:nth-child(4) {
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 5%;
+  width: 10%;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 15%;
 }
 
 th {
@@ -203,100 +208,46 @@ td {
   font-size: 0.95rem;
 }
 
-.vacancy-title-cell {
+.campaign-image-cell {
+  padding: 15px 30px;
+}
+
+.campaign-image-cell img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.campaign-title-cell {
   font-weight: 600;
   color: #ffffff;
-}
-
-.vacancy-description-cell {
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.4;
   white-space: normal;
   overflow: visible;
   text-overflow: initial;
 }
 
-tr {
-  transition: all 0.3s ease;
-}
-
-tr:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.vacancy-title {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: initial;
-}
-
-.vacancy-title strong {
-  display: block;
-  margin-bottom: 5px;
-  color: #ffffff;
-}
-
-.vacancy-description {
-  margin: 0;
-  color: #e0e0e0;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.requirements-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.requirements-list li {
-  color: #e0e0e0;
-  font-size: 0.85rem;
-  margin-bottom: 2px;
-}
-
-.requirements-list li::before {
-  content: "•";
-  color: #ffffff;
-  font-weight: bold;
-  margin-right: 8px;
-}
-
-.salary-badge {
+.status-badge {
   display: inline-block;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
-  border: 1px solid #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.employment-type {
-  display: inline-block;
-  padding: 6px 12px;
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border: 1px solid #ffc107;
-}
-
-.education-level {
-  display: inline-block;
-  padding: 6px 12px;
+.status-badge.active {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
   border: 1px solid #4caf50;
+}
+
+.status-badge.completed {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid #ffc107;
 }
 
 .actions {
@@ -319,6 +270,12 @@ tr:hover {
   border: 1px solid #ffffff;
 }
 
+.action-btn.toggle {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+
 .action-btn.delete {
   background: rgba(244, 67, 54, 0.2);
   color: #f44336;
@@ -327,6 +284,14 @@ tr:hover {
 
 .action-btn:hover {
   transform: scale(1.1);
+}
+
+tr {
+  transition: all 0.3s ease;
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Modal Styles */
@@ -347,7 +312,7 @@ tr:hover {
 .modal-content {
   background: rgba(30, 50, 80, 0.95);
   border-radius: 15px;
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -392,7 +357,7 @@ tr:hover {
 }
 
 /* Form Styles */
-.vacancy-form {
+.campaign-form {
   padding: 30px;
 }
 
@@ -416,7 +381,6 @@ tr:hover {
 }
 
 .form-group input,
-.form-group select,
 .form-group textarea {
   width: 100%;
   padding: 15px 20px;
@@ -430,7 +394,6 @@ tr:hover {
 }
 
 .form-group input:focus,
-.form-group select:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: #ffffff;
@@ -446,48 +409,6 @@ tr:hover {
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
-}
-
-.requirements-container {
-  margin-bottom: 20px;
-}
-
-.requirements-list-input {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.requirements-list-input input {
-  flex: 1;
-}
-
-.remove-requirement-btn {
-  background: rgba(244, 67, 54, 0.2);
-  color: #f44336;
-  border: 1px solid #f44336;
-  border-radius: 6px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.remove-requirement-btn:hover {
-  background: rgba(244, 67, 54, 0.3);
-}
-
-.add-requirement-btn {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4caf50;
-  border: 1px solid #4caf50;
-  border-radius: 6px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-requirement-btn:hover {
-  background: rgba(76, 175, 80, 0.3);
 }
 
 .form-actions {
@@ -533,66 +454,22 @@ tr:hover {
   background: rgba(255, 255, 255, 0.9);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .section-header {
-    flex-direction: column;
-    gap: 20px;
-    align-items: stretch;
-  }
-
-  .add-btn {
-    justify-content: center;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .modal-content {
-    margin: 10px;
-    max-height: 95vh;
-  }
-
-  .modal-header,
-  .vacancy-form {
-    padding: 20px;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .action-btn {
-    padding: 10px;
-  }
-
-  .vacancy-title {
-    max-width: 400px;
-  }
-
-  .vacancy-description-cell {
-    max-width: 600px;
-  }
-}
-
 /* Delete Confirmation Modal */
 .delete-confirm-modal {
-  background: #1a1a1a;
+  background: rgba(30, 50, 80, 0.95);
   border-radius: 15px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  border: 1px solid #333333;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .delete-confirm-header {
   background: rgba(244, 67, 54, 0.2);
   padding: 25px 30px;
   text-align: center;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .delete-icon {
@@ -615,7 +492,7 @@ tr:hover {
 
 .delete-confirm-content p {
   margin: 0 0 15px 0;
-  color: #e0e0e0;
+  color: #ffffff;
   font-size: 1.1rem;
   line-height: 1.5;
 }
@@ -705,4 +582,48 @@ tr:hover {
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid #e0e0e0;
   font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .add-btn {
+    justify-content: center;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+
+  .modal-header,
+  .campaign-form {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    padding: 10px;
+  }
+
+  .campaigns-table {
+    min-width: 100%;
+  }
+
+  table {
+    min-width: 100%;
+  }
 }

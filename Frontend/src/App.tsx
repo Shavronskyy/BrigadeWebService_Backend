@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Reports from "./components/Reports";
 import Contacts from "./components/Contacts";
 import Vacancies from "./components/Vacancies";
+import Support from "./components/Support";
 import Login from "./components/Login";
 import Admin from "./components/Admin";
 import "./App.css";
@@ -33,6 +34,7 @@ function App() {
             <Route path="/reports" element={<Reports />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/vacancies" element={<Vacancies />} />
+            <Route path="/support" element={<Support />} />
             <Route path="/login" element={<Login />} />
             <Route
               path="/admin"

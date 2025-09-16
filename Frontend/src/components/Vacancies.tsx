@@ -7,6 +7,7 @@ import Footer from "./Footer";
 const Vacancies: React.FC = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedVacancy, setExpandedVacancy] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchVacancies = async () => {
@@ -22,6 +23,10 @@ const Vacancies: React.FC = () => {
 
     fetchVacancies();
   }, []);
+
+  const toggleVacancy = (vacancyId: number) => {
+    setExpandedVacancy(expandedVacancy === vacancyId ? null : vacancyId);
+  };
 
   return (
     <div
@@ -48,48 +53,26 @@ const Vacancies: React.FC = () => {
               </div>
             ) : (
               vacancies.map((vacancy) => (
-                <div key={vacancy.id} className="vacancy-item">
-                  <div className="vacancy-header">
-                    <h3>{vacancy.title}</h3>
-                    <span className="vacancy-type">
-                      {vacancy.employmentType}
+                <div key={vacancy.id} className="vacancy-accordion-item">
+                  <div
+                    className="vacancy-accordion-header"
+                    onClick={() => toggleVacancy(vacancy.id)}
+                  >
+                    <h3 className="vacancy-title">{vacancy.title}</h3>
+                    <span className="vacancy-toggle-icon">
+                      {expandedVacancy === vacancy.id ? "−" : "+"}
                     </span>
                   </div>
-                  <div className="vacancy-details">
-                    <div className="vacancy-info">
-                      <span className="info-item">
-                        💰 Зарплата: {vacancy.salary}
-                      </span>
-                      <span className="info-item">
-                        🎓 Освіта: {vacancy.educationLevel}
-                      </span>
-                      <span className="info-item">
-                        📅 Опубліковано:{" "}
-                        {new Date(vacancy.postedDate).toLocaleDateString(
-                          "uk-UA"
-                        )}
-                      </span>
+                  {expandedVacancy === vacancy.id && (
+                    <div className="vacancy-accordion-content">
+                      <div className="vacancy-short-description">
+                        {vacancy.description}
+                      </div>
+                      <button className="apply-btn-accordion">
+                        ПОДАТИ ЗАЯВКУ
+                      </button>
                     </div>
-                    <p className="vacancy-description">{vacancy.description}</p>
-                    {vacancy.requirements &&
-                      vacancy.requirements.length > 0 && (
-                        <div className="vacancy-requirements">
-                          <h4>Вимоги:</h4>
-                          <ul>
-                            {vacancy.requirements.map((req, index) => (
-                              <li key={index}>{req}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    <div className="vacancy-contact">
-                      <p>
-                        <strong>Контактний телефон:</strong>{" "}
-                        {vacancy.contactPhone}
-                      </p>
-                    </div>
-                    <button className="apply-btn">Подати заявку</button>
-                  </div>
+                  )}
                 </div>
               ))
             )}

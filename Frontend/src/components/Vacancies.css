@@ -76,7 +76,7 @@
   backdrop-filter: blur(20px);
   position: relative;
   height: fit-content;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -419,6 +419,28 @@
   .step {
     padding: 30px 20px;
   }
+
+  .vacancy-accordion-header {
+    padding: 15px 20px;
+  }
+
+  .vacancy-title {
+    font-size: 1.2rem;
+  }
+
+  .vacancy-accordion-content {
+    padding: 20px;
+  }
+
+  .vacancy-short-description {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .apply-btn-accordion {
+    padding: 10px 25px;
+    font-size: 0.9rem;
+  }
 }
 
 /* Animations */
@@ -440,6 +462,130 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Accordion Style Vacancies */
+.vacancy-accordion-item {
+  margin-bottom: 20px;
+  background: rgba(30, 50, 80, 0.9);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.vacancy-accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  cursor: pointer;
+  background: rgba(30, 50, 80, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.vacancy-accordion-header:hover {
+  background: rgba(30, 50, 80, 1);
+}
+
+.vacancy-accordion-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.vacancy-title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.vacancy-toggle-icon {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 300;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.vacancy-accordion-header:hover .vacancy-toggle-icon {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.vacancy-accordion-content {
+  padding: 25px;
+  background: rgba(30, 50, 80, 0.8);
+  animation: slideDown 0.3s ease-out;
+  width: 800px;
+  box-sizing: border-box;
+}
+
+.vacancy-short-description {
+  color: #ffffff;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.apply-btn-accordion {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.apply-btn-accordion:hover {
+  background: #ffffff;
+  color: rgba(30, 50, 80, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.apply-btn-accordion:active {
+  transform: translateY(0);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    padding-top: 25px;
+    padding-bottom: 25px;
   }
 }
 
