@@ -10,6 +10,7 @@ namespace BrigadeWebService_DAL.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<Vacancy> Vacancies => Set<Vacancy>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<Donation> Donations => Set<Donation>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -309,7 +309,7 @@ const AdminVacancies: React.FC = () => {
                   name="contactPhone"
                   value={formData.contactPhone}
                   onChange={handleInputChange}
-                  placeholder="+380XXXXXXXXX"
+                  placeholder="+380 (93) 38 02 208"
                   required
                 />
               </div>

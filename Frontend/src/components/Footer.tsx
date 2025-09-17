@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
               Контакти
             </a>
             <span className="footer-separator">|</span>
-            <span className="footer-contact">+380 73 211 0222</span>
+            <span className="footer-contact">+380 (93) 38 02 208</span>
             <span className="footer-separator">|</span>
             <a href="mailto:brigade@army.mil.ua" className="footer-link">
               brigade@army.mil.ua

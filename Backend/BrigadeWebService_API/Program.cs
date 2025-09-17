@@ -3,8 +3,10 @@ using BrigadeWebService_BLL.Options;
 using BrigadeWebService_BLL.Services.Interfaces;
 using BrigadeWebService_BLL.Services.Realizations;
 using BrigadeWebService_DAL.Data;
+using BrigadeWebService_DAL.Repositories.Interfaces.Donations;
 using BrigadeWebService_DAL.Repositories.Interfaces.Reports;
 using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
+using BrigadeWebService_DAL.Repositories.Realizations.Donations;
 using BrigadeWebService_DAL.Repositories.Realizations.Vacancies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -51,10 +53,12 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 // services (existing)
 builder.Services.AddTransient<IVacanciesService, VacanciesService>();
 builder.Services.AddTransient<IReportsService, ReportsService>();
+builder.Services.AddTransient<IDonationService, DonationService>();
 
 // Repository (existing)
 builder.Services.AddScoped<IVacancyRepository, VacancyRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IDonationsRepository, DonationsRepository>();
 
 // 4) CORS - Most permissive for testing
 builder.Services.AddCors(options =>
