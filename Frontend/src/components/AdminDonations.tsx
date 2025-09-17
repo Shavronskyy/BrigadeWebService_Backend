@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from "react";
-import "./AdminCampaigns.css";
+import "./AdminDonations.css";
 import {
-  campaignsApiService,
-  CampaignCreateModel,
-  Campaign,
-} from "../services/campaignsApi";
+  donationsApiService,
+  DonationCreateModel,
+  Donation,
+} from "../services/donationsApi";
 
-interface CampaignFormData {
+interface DonationFormData {
   title: string;
   description: string;
   goal: string;
-  date: string;
-  image: string;
-  link: string;
+  donationLink: string;
+  img: string;
 }
 
-const AdminCampaigns: React.FC = () => {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+const AdminDonations: React.FC = () => {
+  const [donations, setDonations] = useState<Donation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [editingDonation, setEditingDonation] = useState<Donation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
@@ -27,76 +26,75 @@ const AdminCampaigns: React.FC = () => {
   } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
-    campaignId: number | null;
-    campaignTitle: string;
+    donationId: number | null;
+    donationTitle: string;
   }>({
     isOpen: false,
-    campaignId: null,
-    campaignTitle: "",
+    donationId: null,
+    donationTitle: "",
   });
-  const [formData, setFormData] = useState<CampaignFormData>({
+  const [formData, setFormData] = useState<DonationFormData>({
     title: "",
     description: "",
     goal: "",
-    date: "",
-    image: "",
-    link: "",
+    donationLink: "",
+    img: "",
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
-    const fetchCampaigns = async () => {
+    const fetchDonations = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await campaignsApiService.getAllCampaigns();
-        setCampaigns(data);
+        const data = await donationsApiService.getAllDonations();
+        setDonations(data);
       } catch (error) {
-        console.error("Failed to fetch campaigns:", error);
+        console.error("Failed to fetch donations:", error);
         setError("Помилка завантаження зборів");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCampaigns();
+    fetchDonations();
   }, []);
 
-  const openModal = (campaign?: Campaign) => {
-    if (campaign) {
-      setEditingCampaign(campaign);
+  const openModal = (donation?: Donation) => {
+    if (donation) {
+      setEditingDonation(donation);
       setFormData({
-        title: campaign.title,
-        description: campaign.description,
-        goal: campaign.goal,
-        date: campaign.date,
-        image: campaign.image,
-        link: campaign.link,
+        title: donation.title,
+        description: donation.description,
+        goal: donation.goal.toString(),
+        donationLink: donation.donationLink,
+        img: donation.img,
       });
     } else {
-      setEditingCampaign(null);
+      setEditingDonation(null);
       setFormData({
         title: "",
         description: "",
         goal: "",
-        date: "",
-        image: "",
-        link: "",
+        donationLink: "",
+        img: "",
       });
     }
+    setSelectedImage(null);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setEditingCampaign(null);
+    setEditingDonation(null);
     setFormData({
       title: "",
       description: "",
       goal: "",
-      date: "",
-      image: "",
-      link: "",
+      donationLink: "",
+      img: "",
     });
+    setSelectedImage(null);
   };
 
   const handleInputChange = (
@@ -106,38 +104,64 @@ const AdminCampaigns: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setSelectedImage(file || null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      if (editingCampaign) {
-        const updatedCampaign: CampaignCreateModel = {
-          id: editingCampaign.id,
-          ...formData,
-          isCompleted: editingCampaign.isCompleted,
-          createdAt: editingCampaign.createdAt,
-        };
-        const result = await campaignsApiService.updateCampaign(
-          updatedCampaign
-        );
-        setCampaigns((prev) =>
-          prev.map((c) => (c.id === editingCampaign.id ? result : c))
+      const donationData: DonationCreateModel = {
+        id: editingDonation?.id,
+        title: formData.title,
+        description: formData.description,
+        goal: parseInt(formData.goal),
+        creationDate: editingDonation?.creationDate || new Date().toISOString(),
+        donationLink: formData.donationLink,
+        img: formData.img,
+        isCompleted: editingDonation?.isCompleted || false,
+      };
+
+      let result: Donation;
+
+      if (editingDonation) {
+        result = await donationsApiService.updateDonation(donationData);
+        setDonations((prev) =>
+          prev.map((d) => (d.id === editingDonation.id ? result : d))
         );
         showNotification("Збір успішно оновлено", "success");
       } else {
-        const newCampaign: CampaignCreateModel = {
-          ...formData,
-          isCompleted: false,
-          createdAt: new Date().toISOString(),
-        };
-        const result = await campaignsApiService.createCampaign(newCampaign);
-        setCampaigns((prev) => [...prev, result]);
+        result = await donationsApiService.createDonation(donationData);
+        setDonations((prev) => [...prev, result]);
         showNotification("Збір успішно додано", "success");
+      }
+
+      // Upload image if selected
+      if (selectedImage && result.id) {
+        try {
+          const uploadResult = await donationsApiService.uploadImage(
+            result.id,
+            selectedImage
+          );
+          // Update the donation with new image URL
+          const updatedResult = { ...result, img: uploadResult.url };
+          setDonations((prev) =>
+            prev.map((d) => (d.id === result.id ? updatedResult : d))
+          );
+        } catch (uploadError) {
+          console.error("Failed to upload image:", uploadError);
+          showNotification(
+            "Збір збережено, але зображення не завантажено",
+            "error"
+          );
+        }
       }
 
       closeModal();
     } catch (error) {
-      console.error("Failed to save campaign:", error);
+      console.error("Failed to save donation:", error);
       showNotification("Помилка збереження збору", "error");
     }
   };
@@ -150,51 +174,73 @@ const AdminCampaigns: React.FC = () => {
   const openDeleteConfirm = (id: number, title: string) => {
     setDeleteConfirm({
       isOpen: true,
-      campaignId: id,
-      campaignTitle: title,
+      donationId: id,
+      donationTitle: title,
     });
   };
 
   const closeDeleteConfirm = () => {
     setDeleteConfirm({
       isOpen: false,
-      campaignId: null,
-      campaignTitle: "",
+      donationId: null,
+      donationTitle: "",
     });
   };
 
   const confirmDelete = async () => {
-    if (deleteConfirm.campaignId) {
+    if (deleteConfirm.donationId) {
       try {
-        await campaignsApiService.deleteCampaign(deleteConfirm.campaignId);
-        setCampaigns((prev) =>
-          prev.filter((c) => c.id !== deleteConfirm.campaignId)
+        await donationsApiService.deleteDonation(deleteConfirm.donationId);
+        setDonations((prev) =>
+          prev.filter((d) => d.id !== deleteConfirm.donationId)
         );
         showNotification("Збір успішно видалено", "success");
         closeDeleteConfirm();
       } catch (error) {
-        console.error("Failed to delete campaign:", error);
+        console.error("Failed to delete donation:", error);
         showNotification("Помилка видалення збору", "error");
       }
     }
   };
 
-  const toggleCampaignStatus = async (id: number) => {
+  const toggleDonationStatus = async (id: number) => {
     try {
-      const result = await campaignsApiService.toggleCampaignStatus(id);
-      setCampaigns((prev) => prev.map((c) => (c.id === id ? result : c)));
+      const donation = donations.find((d) => d.id === id);
+      if (!donation) return;
+
+      const updatedDonation: DonationCreateModel = {
+        ...donation,
+        isCompleted: !donation.isCompleted,
+      };
+
+      const result = await donationsApiService.updateDonation(updatedDonation);
+      setDonations((prev) => prev.map((d) => (d.id === id ? result : d)));
       showNotification(
         result.isCompleted ? "Збір позначено як завершений" : "Збір активовано",
         "success"
       );
     } catch (error) {
-      console.error("Failed to toggle campaign status:", error);
+      console.error("Failed to toggle donation status:", error);
       showNotification("Помилка зміни статусу збору", "error");
     }
   };
 
+  const deleteImage = async (id: number) => {
+    try {
+      await donationsApiService.deleteImage(id);
+      const updatedDonations = donations.map((d) =>
+        d.id === id ? { ...d, img: "" } : d
+      );
+      setDonations(updatedDonations);
+      showNotification("Зображення успішно видалено", "success");
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+      showNotification("Помилка видалення зображення", "error");
+    }
+  };
+
   return (
-    <div className="admin-campaigns">
+    <div className="admin-donations">
       {notification && (
         <div className={`notification ${notification.type}`}>
           <span className="notification-message">{notification.message}</span>
@@ -220,64 +266,81 @@ const AdminCampaigns: React.FC = () => {
       ) : error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="campaigns-table">
+        <div className="donations-table">
           <table>
             <thead>
               <tr>
                 <th>Зображення</th>
                 <th>Назва</th>
                 <th>Мета</th>
-                <th>Дата</th>
+                <th>Дата створення</th>
                 <th>Статус</th>
                 <th>Дії</th>
               </tr>
             </thead>
             <tbody>
-              {campaigns.length === 0 ? (
+              {donations.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="no-data">
                     Ви ще не додали жодного збору
                   </td>
                 </tr>
               ) : (
-                campaigns.map((campaign) => (
-                  <tr key={campaign.id}>
-                    <td className="campaign-image-cell">
-                      <img src={campaign.image} alt={campaign.title} />
+                donations.map((donation) => (
+                  <tr key={donation.id}>
+                    <td className="donation-image-cell">
+                      {donation.img ? (
+                        <div className="image-container">
+                          <img src={donation.img} alt={donation.title} />
+                          <button
+                            className="delete-image-btn"
+                            onClick={() => deleteImage(donation.id)}
+                            title="Видалити зображення"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="no-image">Немає зображення</div>
+                      )}
                     </td>
-                    <td className="campaign-title-cell">{campaign.title}</td>
-                    <td>{campaign.goal}</td>
-                    <td>{campaign.date}</td>
+                    <td className="donation-title-cell">{donation.title}</td>
+                    <td>{donation.goal.toLocaleString()} ₴</td>
+                    <td>
+                      {new Date(donation.creationDate).toLocaleDateString(
+                        "uk-UA"
+                      )}
+                    </td>
                     <td>
                       <span
                         className={`status-badge ${
-                          campaign.isCompleted ? "completed" : "active"
+                          donation.isCompleted ? "completed" : "active"
                         }`}
                       >
-                        {campaign.isCompleted ? "Завершено" : "Активний"}
+                        {donation.isCompleted ? "Завершено" : "Активний"}
                       </span>
                     </td>
                     <td className="actions">
                       <button
                         className="action-btn edit"
-                        onClick={() => openModal(campaign)}
+                        onClick={() => openModal(donation)}
                         title="Редагувати"
                       >
                         ✏️
                       </button>
                       <button
                         className="action-btn toggle"
-                        onClick={() => toggleCampaignStatus(campaign.id)}
+                        onClick={() => toggleDonationStatus(donation.id)}
                         title={
-                          campaign.isCompleted ? "Активувати" : "Завершити"
+                          donation.isCompleted ? "Активувати" : "Завершити"
                         }
                       >
-                        {campaign.isCompleted ? "🔄" : "✅"}
+                        {donation.isCompleted ? "🔄" : "✅"}
                       </button>
                       <button
                         className="action-btn delete"
                         onClick={() =>
-                          openDeleteConfirm(campaign.id, campaign.title)
+                          openDeleteConfirm(donation.id, donation.title)
                         }
                         title="Видалити"
                       >
@@ -296,13 +359,13 @@ const AdminCampaigns: React.FC = () => {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>{editingCampaign ? "Редагувати збір" : "Додати збір"}</h3>
+              <h3>{editingDonation ? "Редагувати збір" : "Додати збір"}</h3>
               <button className="modal-close" onClick={closeModal}>
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="campaign-form">
+            <form onSubmit={handleSubmit} className="donation-form">
               <div className="form-group">
                 <label htmlFor="title">Назва збору *</label>
                 <input
@@ -329,54 +392,50 @@ const AdminCampaigns: React.FC = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="goal">Мета збору *</label>
+                  <label htmlFor="goal">Мета збору (₴) *</label>
                   <input
-                    type="text"
+                    type="number"
                     id="goal"
                     name="goal"
                     value={formData.goal}
                     onChange={handleInputChange}
-                    placeholder="Наприклад: 49 000 000 €"
+                    placeholder="1000000"
                     required
+                    min="0"
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="date">Дата *</label>
+                  <label htmlFor="donationLink">Посилання на збір</label>
                   <input
-                    type="text"
-                    id="date"
-                    name="date"
-                    value={formData.date}
+                    type="url"
+                    id="donationLink"
+                    name="donationLink"
+                    value={formData.donationLink}
                     onChange={handleInputChange}
-                    placeholder="Наприклад: 10.12.2024"
-                    required
+                    placeholder="https://example.com/donation"
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label htmlFor="image">URL зображення *</label>
+                <label htmlFor="image">Зображення</label>
                 <input
-                  type="url"
+                  type="file"
                   id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  placeholder="Введіть URL зображення"
-                  required
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="link">Посилання на збір</label>
-                <input
-                  type="url"
-                  id="link"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleInputChange}
-                  placeholder="Введіть посилання на збір"
-                />
+                {selectedImage && (
+                  <div className="selected-image">
+                    <p>Вибрано: {selectedImage.name}</p>
+                  </div>
+                )}
+                {formData.img && !selectedImage && (
+                  <div className="current-image">
+                    <p>Поточне зображення:</p>
+                    <img src={formData.img} alt="Current" />
+                  </div>
+                )}
               </div>
 
               <div className="form-actions">
@@ -388,7 +447,7 @@ const AdminCampaigns: React.FC = () => {
                   Скасувати
                 </button>
                 <button type="submit" className="save-btn">
-                  {editingCampaign ? "Оновити" : "Додати"}
+                  {editingDonation ? "Оновити" : "Додати"}
                 </button>
               </div>
             </form>
@@ -409,7 +468,7 @@ const AdminCampaigns: React.FC = () => {
             <div className="delete-confirm-content">
               <p>
                 Ви впевнені, що хочете видалити збір{" "}
-                <strong>"{deleteConfirm.campaignTitle}"</strong>?
+                <strong>"{deleteConfirm.donationTitle}"</strong>?
               </p>
               <p className="delete-warning">Ця дія не може бути скасована.</p>
             </div>
@@ -431,4 +490,4 @@ const AdminCampaigns: React.FC = () => {
   );
 };
 
-export default AdminCampaigns;
+export default AdminDonations;

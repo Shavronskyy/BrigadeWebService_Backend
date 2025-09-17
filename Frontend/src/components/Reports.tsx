@@ -38,7 +38,7 @@ const Reports: React.FC = () => {
           title: report.title,
           shortText: report.shortDescription,
           fullText: report.description,
-          photo: report.img || "/img/report1.jpg", // Fallback image
+          photo: report.img || "",
           date: new Date(report.createdAt).toLocaleDateString("uk-UA"),
           category: report.category,
         }));

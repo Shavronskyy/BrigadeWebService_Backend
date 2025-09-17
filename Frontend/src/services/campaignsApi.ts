@@ -22,85 +22,104 @@ export interface CampaignCreateModel {
   createdAt: string;
 }
 
-// Mock data for now - replace with actual API calls
-const mockCampaigns: Campaign[] = [
-  {
-    id: 1,
-    title: 'Поточні потреби "Птахів Мадяра"',
-    description:
-      "Щоденна потреба в матеріалах, паливі, мастилах, шинах, акумуляторах, портативній пам'яті та інших гаджетах для військових підрозділів та пілотів, щоб забезпечити цілодобову роботу та безпечний транспорт.",
-    goal: "49 000 000 €",
-    date: "10.12.2024",
-    image: "https://via.placeholder.com/300x200/1a2e1a/ffffff?text=Campaign+1",
-    link: "https://t.me/robert_magyar/12",
-    isCompleted: true,
-    createdAt: "2024-12-10T00:00:00Z",
-  },
-  {
-    id: 2,
-    title: "Збір на власне виробництво 30 тисяч протитанкових ПТМ-3",
-    description:
-      "Збір коштів на виробництво протитанкових мін для захисту території України.",
-    goal: "15 000 000 €",
-    date: "23.11.2024",
-    image: "https://via.placeholder.com/300x200/2d4a2d/ffffff?text=Campaign+2",
-    link: "https://example.com/campaign2",
-    isCompleted: false,
-    createdAt: "2024-11-23T00:00:00Z",
-  },
-];
-
 class CampaignsApiService {
-  private campaigns: Campaign[] = [...mockCampaigns];
+  private baseUrl = "http://127.0.0.1:5000/api/Campaigns";
 
   async getAllCampaigns(): Promise<Campaign[]> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return [...this.campaigns];
+    try {
+      const response = await fetch(`${this.baseUrl}/GetAllCampaigns`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+      throw error;
+    }
   }
 
   async getCampaignById(id: number): Promise<Campaign | null> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return this.campaigns.find((campaign) => campaign.id === id) || null;
+    try {
+      const response = await fetch(`${this.baseUrl}/GetCampaignById/${id}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching campaign:", error);
+      throw error;
+    }
   }
 
   async createCampaign(campaign: CampaignCreateModel): Promise<Campaign> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const newCampaign: Campaign = {
-      id: Math.max(...this.campaigns.map((c) => c.id), 0) + 1,
-      ...campaign,
-    };
-    this.campaigns.push(newCampaign);
-    return newCampaign;
+    try {
+      const response = await fetch(`${this.baseUrl}/CreateCampaign`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(campaign),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      throw error;
+    }
   }
 
   async updateCampaign(campaign: CampaignCreateModel): Promise<Campaign> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const index = this.campaigns.findIndex((c) => c.id === campaign.id);
-    if (index === -1) {
-      throw new Error("Campaign not found");
+    try {
+      const response = await fetch(`${this.baseUrl}/UpdateCampaign`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(campaign),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating campaign:", error);
+      throw error;
     }
-    this.campaigns[index] = { ...campaign } as Campaign;
-    return this.campaigns[index];
   }
 
   async deleteCampaign(id: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const index = this.campaigns.findIndex((c) => c.id === id);
-    if (index === -1) {
-      throw new Error("Campaign not found");
+    try {
+      const response = await fetch(`${this.baseUrl}/DeleteCampaign/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+      throw error;
     }
-    this.campaigns.splice(index, 1);
   }
 
   async toggleCampaignStatus(id: number): Promise<Campaign> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const campaign = this.campaigns.find((c) => c.id === id);
-    if (!campaign) {
-      throw new Error("Campaign not found");
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/ToggleCampaignStatus/${id}`,
+        {
+          method: "PUT",
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error toggling campaign status:", error);
+      throw error;
     }
-    campaign.isCompleted = !campaign.isCompleted;
-    return campaign;
   }
 }
 

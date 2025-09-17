@@ -63,7 +63,7 @@ const AdminReports: React.FC = () => {
           title: report.title,
           shortText: report.shortDescription,
           fullText: report.description,
-          photo: report.img || "/img/report1.jpg",
+          photo: report.img || "",
           date: new Date(report.createdAt).toLocaleDateString("uk-UA"),
           category: report.category,
           isPublished: report.isPublished,
@@ -388,8 +388,8 @@ const AdminReports: React.FC = () => {
         <div className="loading">Завантаження звітів...</div>
       ) : error ? (
         <div className="error">{error}</div>
-             ) : reports.length === 0 ? (
-         <div className="no-data">Ви ще не додали жодного звіту</div>
+      ) : reports.length === 0 ? (
+        <div className="no-data">Ви ще не додали жодного звіту</div>
       ) : (
         <div className="reports-table">
           <table>
@@ -443,13 +443,13 @@ const AdminReports: React.FC = () => {
                     >
                       {report.isPublished ? "👁️" : "📝"}
                     </button>
-                                         <button
-                       className="action-btn delete"
-                       onClick={() => openDeleteConfirm(report.id, report.title)}
-                       title="Видалити"
-                     >
-                       🗑️
-                     </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => openDeleteConfirm(report.id, report.title)}
+                      title="Видалити"
+                    >
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -609,43 +609,43 @@ const AdminReports: React.FC = () => {
               </div>
             </form>
           </div>
-                 </div>
-       )}
+        </div>
+      )}
 
-       {/* Delete Confirmation Modal */}
-       {deleteConfirm.isOpen && (
-         <div className="modal-overlay" onClick={closeDeleteConfirm}>
-           <div
-             className="delete-confirm-modal"
-             onClick={(e) => e.stopPropagation()}
-           >
-             <div className="delete-confirm-header">
-               <div className="delete-icon">🗑️</div>
-               <h3>Підтвердження видалення</h3>
-             </div>
-             <div className="delete-confirm-content">
-               <p>
-                 Ви впевнені, що хочете видалити звіт{" "}
-                 <strong>"{deleteConfirm.reportTitle}"</strong>?
-               </p>
-               <p className="delete-warning">Ця дія не може бути скасована.</p>
-             </div>
-             <div className="delete-confirm-actions">
-               <button
-                 className="cancel-delete-btn"
-                 onClick={closeDeleteConfirm}
-               >
-                 Скасувати
-               </button>
-               <button className="confirm-delete-btn" onClick={confirmDelete}>
-                 Видалити
-               </button>
-               </div>
-             </div>
-           </div>
-         )}
-       </div>
-     );
-   };
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.isOpen && (
+        <div className="modal-overlay" onClick={closeDeleteConfirm}>
+          <div
+            className="delete-confirm-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-confirm-header">
+              <div className="delete-icon">🗑️</div>
+              <h3>Підтвердження видалення</h3>
+            </div>
+            <div className="delete-confirm-content">
+              <p>
+                Ви впевнені, що хочете видалити звіт{" "}
+                <strong>"{deleteConfirm.reportTitle}"</strong>?
+              </p>
+              <p className="delete-warning">Ця дія не може бути скасована.</p>
+            </div>
+            <div className="delete-confirm-actions">
+              <button
+                className="cancel-delete-btn"
+                onClick={closeDeleteConfirm}
+              >
+                Скасувати
+              </button>
+              <button className="confirm-delete-btn" onClick={confirmDelete}>
+                Видалити
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default AdminReports;

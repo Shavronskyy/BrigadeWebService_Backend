@@ -20,7 +20,7 @@ namespace BrigadeWebService_API.Controllers
         [HttpGet("getAll")]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _donationService.GetAllDonationsAsync();
+            var data = await _donationService.GetAllAsync();
             return data.Any() ? Ok(data) : NoContent();
         }
 
@@ -76,7 +76,7 @@ namespace BrigadeWebService_API.Controllers
             if (!o.AllowedExtensions.Contains(ext))
                 return BadRequest("Unsupported file type");
 
-            var report = (await _donationService.GetAllDonationsAsync()).FirstOrDefault(r => r.Id == id);
+            var report = (await _donationService.GetAllAsync()).FirstOrDefault(r => r.Id == id);
             if (report == null) return NotFound("Report not found");
 
             var yyyy = DateTime.UtcNow.Year.ToString("D4");
@@ -114,7 +114,7 @@ namespace BrigadeWebService_API.Controllers
             int id,
             [FromServices] IWebHostEnvironment env)
         {
-            var report = (await _donationService.GetAllDonationsAsync()).FirstOrDefault(r => r.Id == id);
+            var report = (await _donationService.GetAllAsync()).FirstOrDefault(r => r.Id == id);
             if (report == null) return NotFound("Report not found");
 
             if (!string.IsNullOrWhiteSpace(report.Img) && report.Img.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
