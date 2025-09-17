@@ -388,73 +388,50 @@ const AdminReports: React.FC = () => {
         <div className="loading">Завантаження звітів...</div>
       ) : error ? (
         <div className="error">{error}</div>
-      ) : reports.length === 0 ? (
-        <div className="no-data">Ви ще не додали жодного звіту</div>
       ) : (
-        <div className="reports-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Назва</th>
-                <th>Категорія</th>
-                <th>Дата</th>
-                <th>Статус</th>
-                <th>Дії</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((report) => (
-                <tr key={report.id}>
-                  <td>
-                    <div className="report-title">
-                      <strong>{report.title}</strong>
-                      <p className="report-short">{report.shortText}</p>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="category-badge">{report.category}</span>
-                  </td>
-                  <td>{report.date}</td>
-                  <td>
-                    <span
-                      className={`status ${
-                        report.isPublished ? "published" : "draft"
-                      }`}
-                    >
-                      {report.isPublished ? "Опубліковано" : "Чернетка"}
-                    </span>
-                  </td>
-                  <td className="actions">
-                    <button
-                      className="action-btn edit"
-                      onClick={() => openModal(report)}
-                      title="Редагувати"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="action-btn toggle"
-                      onClick={() => toggleReportStatus(report.id)}
-                      title={
-                        report.isPublished
-                          ? "Зняти з публікації"
-                          : "Опублікувати"
-                      }
-                    >
-                      {report.isPublished ? "👁️" : "📝"}
-                    </button>
-                    <button
-                      className="action-btn delete"
-                      onClick={() => openDeleteConfirm(report.id, report.title)}
-                      title="Видалити"
-                    >
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="reports-list">
+          {reports.length === 0 ? (
+            <div className="no-reports">Ви ще не додали жодного звіту</div>
+          ) : (
+            reports.map((report) => (
+              <div key={report.id} className="report-item">
+                <h3 className="report-title">{report.title}</h3>
+                <span className="report-date">{report.date}</span>
+                <span
+                  className={`status-badge ${
+                    report.isPublished ? "published" : "draft"
+                  }`}
+                >
+                  {report.isPublished ? "Опубліковано" : "Чернетка"}
+                </span>
+                <div className="report-actions">
+                  <button
+                    className="action-btn edit"
+                    onClick={() => openModal(report)}
+                    title="Редагувати"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="action-btn toggle"
+                    onClick={() => toggleReportStatus(report.id)}
+                    title={
+                      report.isPublished ? "Зняти з публікації" : "Опублікувати"
+                    }
+                  >
+                    {report.isPublished ? "👁️" : "📝"}
+                  </button>
+                  <button
+                    className="action-btn delete"
+                    onClick={() => openDeleteConfirm(report.id, report.title)}
+                    title="Видалити"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 

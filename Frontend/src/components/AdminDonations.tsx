@@ -11,7 +11,6 @@ interface DonationFormData {
   description: string;
   goal: string;
   donationLink: string;
-  img: string;
 }
 
 const AdminDonations: React.FC = () => {
@@ -38,7 +37,6 @@ const AdminDonations: React.FC = () => {
     description: "",
     goal: "",
     donationLink: "",
-    img: "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -68,7 +66,6 @@ const AdminDonations: React.FC = () => {
         description: donation.description,
         goal: donation.goal.toString(),
         donationLink: donation.donationLink,
-        img: donation.img,
       });
     } else {
       setEditingDonation(null);
@@ -77,7 +74,6 @@ const AdminDonations: React.FC = () => {
         description: "",
         goal: "",
         donationLink: "",
-        img: "",
       });
     }
     setSelectedImage(null);
@@ -92,7 +88,6 @@ const AdminDonations: React.FC = () => {
       description: "",
       goal: "",
       donationLink: "",
-      img: "",
     });
     setSelectedImage(null);
   };
@@ -112,15 +107,28 @@ const AdminDonations: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate image upload for new donations
+    if (!editingDonation && !selectedImage) {
+      showNotification("Будь ласка, виберіть зображення для збору", "error");
+      return;
+    }
+
     try {
+      // Get current date in Kyiv timezone
+      const now = new Date();
+      const kyivTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Europe/Kiev" })
+      );
+      const creationDate = kyivTime.toISOString();
+
       const donationData: DonationCreateModel = {
         id: editingDonation?.id,
         title: formData.title,
         description: formData.description,
         goal: parseInt(formData.goal),
-        creationDate: editingDonation?.creationDate || new Date().toISOString(),
+        creationDate: editingDonation?.creationDate || creationDate,
         donationLink: formData.donationLink,
-        img: formData.img,
+        img: editingDonation?.img || "", // Will be updated after image upload
         isCompleted: editingDonation?.isCompleted || false,
       };
 
@@ -150,6 +158,7 @@ const AdminDonations: React.FC = () => {
           setDonations((prev) =>
             prev.map((d) => (d.id === result.id ? updatedResult : d))
           );
+          showNotification("Зображення успішно завантажено", "success");
         } catch (uploadError) {
           console.error("Failed to upload image:", uploadError);
           showNotification(
@@ -266,92 +275,86 @@ const AdminDonations: React.FC = () => {
       ) : error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="donations-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Зображення</th>
-                <th>Назва</th>
-                <th>Мета</th>
-                <th>Дата створення</th>
-                <th>Статус</th>
-                <th>Дії</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="no-data">
-                    Ви ще не додали жодного збору
-                  </td>
-                </tr>
-              ) : (
-                donations.map((donation) => (
-                  <tr key={donation.id}>
-                    <td className="donation-image-cell">
-                      {donation.img ? (
-                        <div className="image-container">
-                          <img src={donation.img} alt={donation.title} />
-                          <button
-                            className="delete-image-btn"
-                            onClick={() => deleteImage(donation.id)}
-                            title="Видалити зображення"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="no-image">Немає зображення</div>
-                      )}
-                    </td>
-                    <td className="donation-title-cell">{donation.title}</td>
-                    <td>{donation.goal.toLocaleString()} ₴</td>
-                    <td>
+        <div className="donations-list">
+          {donations.length === 0 ? (
+            <div className="no-donations">Ви ще не додали жодного збору</div>
+          ) : (
+            donations.map((donation) => (
+              <div key={donation.id} className="donation-item">
+                {donation.img ? (
+                  <img
+                    src={donation.img}
+                    alt={donation.title}
+                    className="donation-image"
+                  />
+                ) : (
+                  <div
+                    className="donation-image"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "rgba(255,255,255,0.6)",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Немає фото
+                  </div>
+                )}
+
+                <div className="donation-content">
+                  <h3 className="donation-title">{donation.title}</h3>
+                  <div className="donation-details">
+                    <span className="donation-goal">
+                      Мета: {donation.goal.toLocaleString()} ₴
+                    </span>
+                    <span className="donation-date">
                       {new Date(donation.creationDate).toLocaleDateString(
                         "uk-UA"
                       )}
-                    </td>
-                    <td>
-                      <span
-                        className={`status-badge ${
-                          donation.isCompleted ? "completed" : "active"
-                        }`}
-                      >
-                        {donation.isCompleted ? "Завершено" : "Активний"}
-                      </span>
-                    </td>
-                    <td className="actions">
-                      <button
-                        className="action-btn edit"
-                        onClick={() => openModal(donation)}
-                        title="Редагувати"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="action-btn toggle"
-                        onClick={() => toggleDonationStatus(donation.id)}
-                        title={
-                          donation.isCompleted ? "Активувати" : "Завершити"
-                        }
-                      >
-                        {donation.isCompleted ? "🔄" : "✅"}
-                      </button>
-                      <button
-                        className="action-btn delete"
-                        onClick={() =>
-                          openDeleteConfirm(donation.id, donation.title)
-                        }
-                        title="Видалити"
-                      >
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="donation-status">
+                  <span
+                    className={`status-badge ${
+                      donation.isCompleted ? "completed" : "active"
+                    }`}
+                  >
+                    {donation.isCompleted ? "Завершено" : "Активний"}
+                  </span>
+                </div>
+
+                <div className="donation-actions">
+                  <button
+                    className="action-btn edit"
+                    onClick={() => openModal(donation)}
+                    title="Редагувати"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="action-btn toggle"
+                    onClick={() => toggleDonationStatus(donation.id)}
+                    title={donation.isCompleted ? "Активувати" : "Завершити"}
+                  >
+                    {donation.isCompleted ? "🔄" : "✅"}
+                  </button>
+                  <button
+                    className="action-btn delete"
+                    onClick={() =>
+                      openDeleteConfirm(donation.id, donation.title)
+                    }
+                    title="Видалити"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
@@ -390,50 +393,62 @@ const AdminDonations: React.FC = () => {
                 />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="goal">Мета збору (₴) *</label>
-                  <input
-                    type="number"
-                    id="goal"
-                    name="goal"
-                    value={formData.goal}
-                    onChange={handleInputChange}
-                    placeholder="1000000"
-                    required
-                    min="0"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="donationLink">Посилання на збір</label>
-                  <input
-                    type="url"
-                    id="donationLink"
-                    name="donationLink"
-                    value={formData.donationLink}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/donation"
-                  />
-                </div>
+              <div className="form-group">
+                <label htmlFor="goal">Мета збору (₴) *</label>
+                <input
+                  type="number"
+                  id="goal"
+                  name="goal"
+                  value={formData.goal}
+                  onChange={handleInputChange}
+                  placeholder="1000000"
+                  required
+                  min="0"
+                />
               </div>
 
               <div className="form-group">
-                <label htmlFor="image">Зображення</label>
+                <label htmlFor="donationLink">Посилання на збір</label>
+                <input
+                  type="url"
+                  id="donationLink"
+                  name="donationLink"
+                  value={formData.donationLink}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com/donation"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="image">
+                  Зображення {!editingDonation && "*"}
+                </label>
                 <input
                   type="file"
                   id="image"
                   accept="image/*"
                   onChange={handleImageChange}
+                  required={!editingDonation}
                 />
                 {selectedImage && (
                   <div className="selected-image">
                     <p>Вибрано: {selectedImage.name}</p>
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Preview"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "150px",
+                        marginTop: "10px",
+                        borderRadius: "6px",
+                      }}
+                    />
                   </div>
                 )}
-                {formData.img && !selectedImage && (
+                {editingDonation?.img && !selectedImage && (
                   <div className="current-image">
                     <p>Поточне зображення:</p>
-                    <img src={formData.img} alt="Current" />
+                    <img src={editingDonation.img} alt="Current" />
                   </div>
                 )}
               </div>

@@ -206,60 +206,35 @@ const AdminVacancies: React.FC = () => {
       ) : error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="vacancies-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Назва</th>
-                <th>Опис</th>
-                <th>Контактний телефон</th>
-                <th>Дата публікації</th>
-                <th>Дії</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vacancies.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="no-data">
-                    Ви ще не додали жодної вакансії
-                  </td>
-                </tr>
-              ) : (
-                vacancies.map((vacancy) => (
-                  <tr key={vacancy.id}>
-                    <td className="vacancy-title-cell">{vacancy.title}</td>
-                    <td className="vacancy-description-cell">
-                      {vacancy.description.length > 100
-                        ? `${vacancy.description.substring(0, 100)}...`
-                        : vacancy.description}
-                    </td>
-                    <td>{vacancy.contactPhone}</td>
-                    <td>
-                      {new Date(vacancy.postedDate).toLocaleDateString("uk-UA")}
-                    </td>
-                    <td className="actions">
-                      <button
-                        className="action-btn edit"
-                        onClick={() => openModal(vacancy)}
-                        title="Редагувати"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="action-btn delete"
-                        onClick={() =>
-                          openDeleteConfirm(vacancy.id, vacancy.title)
-                        }
-                        title="Видалити"
-                      >
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="vacancies-list">
+          {vacancies.length === 0 ? (
+            <div className="no-vacancies">Ви ще не додали жодної вакансії</div>
+          ) : (
+            vacancies.map((vacancy) => (
+              <div key={vacancy.id} className="vacancy-item">
+                <h3 className="vacancy-title">{vacancy.title}</h3>
+                <span className="vacancy-date">
+                  {new Date(vacancy.postedDate).toLocaleDateString("uk-UA")}
+                </span>
+                <div className="vacancy-actions">
+                  <button
+                    className="action-btn edit"
+                    onClick={() => openModal(vacancy)}
+                    title="Редагувати"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="action-btn delete"
+                    onClick={() => openDeleteConfirm(vacancy.id, vacancy.title)}
+                    title="Видалити"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 

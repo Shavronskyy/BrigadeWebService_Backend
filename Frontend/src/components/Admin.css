@@ -1,13 +1,16 @@
 .admin-page {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: var(--bg-primary);
+  position: relative;
 }
 
 .admin-header {
-  background: #1a1a1a;
-  color: white;
+  background: var(--header-gradient);
+  color: var(--text-primary);
   padding: 40px 0;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 2px solid var(--border-primary);
+  position: relative;
+  overflow: hidden;
 }
 
 .header-content {
@@ -29,25 +32,34 @@
 }
 
 .logout-admin-btn {
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 2px solid var(--border-primary);
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .logout-admin-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--military-green);
+  border-color: var(--military-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--shadow-green);
 }
 
 .admin-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .admin-header p {
@@ -57,10 +69,11 @@
 
 .admin-content {
   padding: 40px 0;
+  background: var(--bg-primary);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -69,7 +82,7 @@
   display: flex;
   gap: 20px;
   margin-bottom: 40px;
-  border-bottom: 2px solid #333333;
+  border-bottom: 2px solid var(--border-primary);
   padding-bottom: 20px;
 }
 
@@ -78,29 +91,33 @@
   align-items: center;
   gap: 10px;
   padding: 15px 25px;
-  border: none;
-  background: #1a1a1a;
-  color: #ffffff;
+  border: 2px solid transparent;
+  background: var(--card-bg);
+  color: var(--text-primary);
   border-radius: 10px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
-  border: 1px solid #333333;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
 }
 
 .nav-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-  border-color: #ffffff;
+  background: var(--header-gradient);
+  border-color: var(--border-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px var(--shadow-green);
 }
 
 .nav-btn.active {
-  background: #ffffff;
-  color: #000000;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
-  border-color: #ffffff;
+  background: var(--header-gradient);
+  border-color: var(--military-gold);
+  color: var(--text-primary);
+  box-shadow: 0 4px 15px var(--shadow-green);
 }
 
 .nav-icon {
@@ -108,10 +125,16 @@
 }
 
 .admin-section {
-  background: white;
+  background: var(--card-bg);
+  border: 2px solid var(--border-muted);
   border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  max-width: none;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Responsive Design */
