@@ -4,6 +4,7 @@ import {
   donationsApiService,
   DonationCreateModel,
   Donation,
+  ReportCreateModel,
 } from "../services/donationsApi";
 
 interface DonationFormData {
@@ -13,10 +14,19 @@ interface DonationFormData {
   donationLink: string;
 }
 
+interface ReportFormData {
+  title: string;
+  description: string;
+  shortDescription: string;
+  category: string;
+}
+
 const AdminDonations: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [editingDonation, setEditingDonation] = useState<Donation | null>(null);
+  const [reportDonation, setReportDonation] = useState<Donation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
@@ -38,7 +48,16 @@ const AdminDonations: React.FC = () => {
     goal: "",
     donationLink: "",
   });
+  const [reportFormData, setReportFormData] = useState<ReportFormData>({
+    title: "",
+    description: "",
+    shortDescription: "",
+    category: "",
+  });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedReportImage, setSelectedReportImage] = useState<File | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchDonations = async () => {
@@ -49,7 +68,11 @@ const AdminDonations: React.FC = () => {
         setDonations(data);
       } catch (error) {
         console.error("Failed to fetch donations:", error);
-        setError("Помилка завантаження зборів");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Помилка завантаження зборів";
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -92,6 +115,30 @@ const AdminDonations: React.FC = () => {
     setSelectedImage(null);
   };
 
+  const openReportModal = (donation: Donation) => {
+    setReportDonation(donation);
+    setReportFormData({
+      title: "",
+      description: "",
+      shortDescription: "",
+      category: "",
+    });
+    setSelectedReportImage(null);
+    setIsReportModalOpen(true);
+  };
+
+  const closeReportModal = () => {
+    setIsReportModalOpen(false);
+    setReportDonation(null);
+    setReportFormData({
+      title: "",
+      description: "",
+      shortDescription: "",
+      category: "",
+    });
+    setSelectedReportImage(null);
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -99,9 +146,21 @@ const AdminDonations: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleReportInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setReportFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setSelectedImage(file || null);
+  };
+
+  const handleReportImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setSelectedReportImage(file || null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -171,8 +230,55 @@ const AdminDonations: React.FC = () => {
       closeModal();
     } catch (error) {
       console.error("Failed to save donation:", error);
-      showNotification("Помилка збереження збору", "error");
+      const errorMessage =
+        error instanceof Error ? error.message : "Помилка збереження збору";
+      showNotification(errorMessage, "error");
     }
+  };
+
+  const handleReportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!reportDonation) return;
+
+    console.log("Creating report for donation ID:", reportDonation.id);
+
+    try {
+      const reportData: ReportCreateModel = {
+        title: reportFormData.title,
+        description: reportFormData.description,
+        shortDescription: reportFormData.shortDescription,
+        category: reportFormData.category,
+        img: "",
+        isPublished: true,
+        donationId: reportDonation.id, // This will be used for the API call
+        createdAt: new Date().toISOString(),
+      };
+
+      // Add new report using the new endpoint
+      const result = await donationsApiService.addReportToDonation(
+        reportDonation.id,
+        reportData
+      );
+
+      showNotification("Звіт успішно додано", "success");
+
+      setDonations((prev) =>
+        prev.map((d) => (d.id === result.id ? result : d))
+      );
+
+      closeReportModal();
+    } catch (error) {
+      console.error("Failed to save report:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Помилка збереження звіту";
+      showNotification(errorMessage, "error");
+    }
+  };
+
+  const deleteReport = async (donationId: number) => {
+    // TODO: Implement report deletion when backend endpoint is available
+    showNotification("Видалення звітів поки не реалізовано", "error");
   };
 
   const showNotification = (message: string, type: "success" | "error") => {
@@ -207,7 +313,9 @@ const AdminDonations: React.FC = () => {
         closeDeleteConfirm();
       } catch (error) {
         console.error("Failed to delete donation:", error);
-        showNotification("Помилка видалення збору", "error");
+        const errorMessage =
+          error instanceof Error ? error.message : "Помилка видалення збору";
+        showNotification(errorMessage, "error");
       }
     }
   };
@@ -230,21 +338,9 @@ const AdminDonations: React.FC = () => {
       );
     } catch (error) {
       console.error("Failed to toggle donation status:", error);
-      showNotification("Помилка зміни статусу збору", "error");
-    }
-  };
-
-  const deleteImage = async (id: number) => {
-    try {
-      await donationsApiService.deleteImage(id);
-      const updatedDonations = donations.map((d) =>
-        d.id === id ? { ...d, img: "" } : d
-      );
-      setDonations(updatedDonations);
-      showNotification("Зображення успішно видалено", "success");
-    } catch (error) {
-      console.error("Failed to delete image:", error);
-      showNotification("Помилка видалення зображення", "error");
+      const errorMessage =
+        error instanceof Error ? error.message : "Помилка зміни статусу збору";
+      showNotification(errorMessage, "error");
     }
   };
 
@@ -315,6 +411,20 @@ const AdminDonations: React.FC = () => {
                       )}
                     </span>
                   </div>
+                  {donation.reports && donation.reports.length > 0 && (
+                    <div className="donation-report">
+                      <div className="report-badge">
+                        📊 Звіт ({donation.reports.length})
+                      </div>
+                      {donation.reports.map((report, index) => (
+                        <div key={report.id} className="report-preview">
+                          <strong>{report.title}</strong>
+                          <p>{report.shortDescription}</p>
+                          <small>Категорія: {report.category}</small>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="donation-status">
@@ -335,6 +445,26 @@ const AdminDonations: React.FC = () => {
                   >
                     ✏️
                   </button>
+                  <button
+                    className="action-btn report"
+                    onClick={() => openReportModal(donation)}
+                    title={
+                      donation.reports && donation.reports.length > 0
+                        ? "Додати ще звіт"
+                        : "Додати звіт"
+                    }
+                  >
+                    📊
+                  </button>
+                  {donation.reports && donation.reports.length > 0 && (
+                    <button
+                      className="action-btn delete-report"
+                      onClick={() => deleteReport(donation.id)}
+                      title="Видалити звіти"
+                    >
+                      🗑️
+                    </button>
+                  )}
                   <button
                     className="action-btn toggle"
                     onClick={() => toggleDonationStatus(donation.id)}
@@ -463,6 +593,107 @@ const AdminDonations: React.FC = () => {
                 </button>
                 <button type="submit" className="save-btn">
                   {editingDonation ? "Оновити" : "Додати"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isReportModalOpen && reportDonation && (
+        <div className="modal-overlay" onClick={closeReportModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Додати звіт</h3>
+              <button className="modal-close" onClick={closeReportModal}>
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleReportSubmit} className="donation-form">
+              <div className="form-group">
+                <label htmlFor="title">Назва звіту *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={reportFormData.title}
+                  onChange={handleReportInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="shortDescription">Короткий опис *</label>
+                <input
+                  type="text"
+                  id="shortDescription"
+                  name="shortDescription"
+                  value={reportFormData.shortDescription}
+                  onChange={handleReportInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="description">Повний опис звіту *</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={reportFormData.description}
+                  onChange={handleReportInputChange}
+                  rows={6}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="category">Категорія *</label>
+                <input
+                  type="text"
+                  id="category"
+                  name="category"
+                  value={reportFormData.category}
+                  onChange={handleReportInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="reportImage">Зображення звіту</label>
+                <input
+                  type="file"
+                  id="reportImage"
+                  accept="image/*"
+                  onChange={handleReportImageChange}
+                />
+                {selectedReportImage && (
+                  <div className="selected-image">
+                    <p>Вибрано: {selectedReportImage.name}</p>
+                    <img
+                      src={URL.createObjectURL(selectedReportImage)}
+                      alt="Preview"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "150px",
+                        marginTop: "10px",
+                        borderRadius: "6px",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={closeReportModal}
+                >
+                  Скасувати
+                </button>
+                <button type="submit" className="save-btn">
+                  Додати звіт
                 </button>
               </div>
             </form>

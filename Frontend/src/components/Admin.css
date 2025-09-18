@@ -19,38 +19,14 @@
   align-items: center;
 }
 
-.user-info {
+.admin-title {
+  flex: 1;
+}
+
+.admin-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.user-info span {
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-.logout-admin-btn {
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  border: 2px solid var(--border-primary);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.logout-admin-btn:hover {
-  background: var(--military-green);
-  border-color: var(--military-gold);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px var(--shadow-green);
+  align-items: center;
+  gap: 15px;
 }
 
 .admin-header h1 {
@@ -149,8 +125,12 @@
     text-align: center;
   }
 
-  .user-info {
-    align-items: center;
+  .admin-title {
+    text-align: center;
+  }
+
+  .admin-actions {
+    display: none;
   }
 
   .admin-navigation {

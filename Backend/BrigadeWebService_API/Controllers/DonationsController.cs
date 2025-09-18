@@ -1,6 +1,9 @@
-﻿using BrigadeWebService_BLL.Dto.Donations;
+﻿using BrigadeWebService_API.Controllers.Base;
+using BrigadeWebService_BLL.Dto.Donations;
+using BrigadeWebService_BLL.Dto.Reports;
 using BrigadeWebService_BLL.Options;
 using BrigadeWebService_BLL.Services.Interfaces;
+using BrigadeWebService_DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -8,55 +11,30 @@ namespace BrigadeWebService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DonationsController : Controller
+    public class DonationsController : BaseCRUDController<Donation, DonationCreateModel>
     {
         private IDonationService _donationService;
 
-        public DonationsController(IDonationService donationService)
+        public DonationsController(IDonationService donationService) : base(donationService)
         {
             _donationService = donationService;
         }
 
-        [HttpGet("getAll")]
-        public async Task<IActionResult> GetAll()
+        [HttpPost("{id:int}/createReport")]
+        public async Task<IActionResult> AddReport([FromQuery] int id, [FromBody] ReportCreateModel model)
         {
-            var data = await _donationService.GetAllAsync();
-            return data.Any() ? Ok(data) : NoContent();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            return await _donationService.CreateReportAsync(id, model) ? Ok() : BadRequest("Failed to create report for donation");
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] DonationCreateModel model)
+        [HttpPatch("{id:int}/completeDonation")]
+        public async Task<IActionResult> CompleteDonation([FromQuery] int id)
         {
-            if (model == null)
-            {
-                return BadRequest("Invalid model");
-            }
-            var donation = await _donationService.CreateAsync(model);
-            return donation != null ? Ok(donation) : BadRequest("Failed to create donation");
+            return await _donationService.ChangeDonationStateAsync(id) ? Ok() : BadRequest("Failed to create report for donation");
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> Update([FromBody] DonationCreateModel model)
-        {
-            if (model == null || model.Id <= 0)
-            {
-                return BadRequest("Invalid model");
-            }
-            var updated = await _donationService.UpdateAsync(model);
-            return updated != null ? Ok(updated) : NotFound("Donation not found");
-        }
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid ID");
-            }
-            var result = await _donationService.DeleteAsync(id);
-            return result ? Ok("Donation deleted successfully") : NotFound("Donation not found");
-        }
-
+        #region Images
         [HttpPost("{id:int}/image")]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(15_000_000)]
@@ -130,5 +108,6 @@ namespace BrigadeWebService_API.Controllers
             await _donationService.UpdateImageAsync(id, string.Empty);
             return NoContent();
         }
+        #endregion Images
     }
 }

@@ -15,7 +15,7 @@ namespace BrigadeWebService_DAL.Repositories.Interfaces.Base
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<T?> GetById(int id);
+        Task<T?> GetByIdAsync(int id);
         /// <summary>
         /// Get database entity by a specific condition.
         /// </summary>

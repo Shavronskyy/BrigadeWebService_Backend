@@ -1,6 +1,8 @@
-﻿namespace BrigadeWebService_BLL.Dto.Vacancies
+﻿using BrigadeWebService_BLL.Dto.Base;
+
+namespace BrigadeWebService_BLL.Dto.Vacancies
 {
-    public class VacancyCreateModel
+    public class VacancyCreateModel : ICreateModel
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;

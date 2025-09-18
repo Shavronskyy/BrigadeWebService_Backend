@@ -7,6 +7,8 @@ import Footer from "./Footer";
 const Support: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState<Donation | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchDonations = async () => {
@@ -15,6 +17,7 @@ const Support: React.FC = () => {
         setDonations(data);
       } catch (error) {
         console.error("Failed to fetch donations:", error);
+        // You could add error state here if needed
       } finally {
         setLoading(false);
       }
@@ -22,6 +25,16 @@ const Support: React.FC = () => {
 
     fetchDonations();
   }, []);
+
+  const openReportModal = (donation: Donation) => {
+    setSelectedReport(donation);
+    setIsReportModalOpen(true);
+  };
+
+  const closeReportModal = () => {
+    setIsReportModalOpen(false);
+    setSelectedReport(null);
+  };
 
   return (
     <div className="support-page">
@@ -64,7 +77,7 @@ const Support: React.FC = () => {
                       </p>
                       <p>{donation.description}</p>
                     </div>
-                    {donation.donationLink && (
+                    {donation.donationLink && !donation.isCompleted && (
                       <div className="campaign-link">
                         <a
                           href={donation.donationLink}
@@ -76,6 +89,31 @@ const Support: React.FC = () => {
                         </a>
                       </div>
                     )}
+                    {donation.isCompleted &&
+                      donation.reports &&
+                      donation.reports.length > 0 && (
+                        <div className="campaign-report">
+                          <div className="report-section">
+                            <h4>
+                              📊 Звіти про використання коштів (
+                              {donation.reports.length})
+                            </h4>
+                            {donation.reports.map((report, index) => (
+                              <div key={report.id} className="report-preview">
+                                <h5>{report.title}</h5>
+                                <p>{report.shortDescription}</p>
+                                <small>Категорія: {report.category}</small>
+                                <button
+                                  className="report-btn"
+                                  onClick={() => openReportModal(donation)}
+                                >
+                                  Читати повний звіт
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     <button className="details-btn">
                       Докладніше
                       <span className="arrow">↓</span>
@@ -87,6 +125,57 @@ const Support: React.FC = () => {
           )}
         </div>
       </div>
+
+      {isReportModalOpen && selectedReport && (
+        <div className="modal-overlay" onClick={closeReportModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Звіт про використання коштів</h3>
+              <button className="modal-close" onClick={closeReportModal}>
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {selectedReport.reports && selectedReport.reports.length > 0 && (
+                <div className="report-content">
+                  {selectedReport.reports.map((report, index) => (
+                    <div key={report.id} className="report-item">
+                      {report.img && (
+                        <div className="report-image">
+                          <img src={report.img} alt={report.title} />
+                        </div>
+                      )}
+                      <h4>{report.title}</h4>
+                      <div className="report-meta">
+                        <span className="report-category">
+                          Категорія: {report.category}
+                        </span>
+                        <span className="report-date">
+                          Дата звіту:{" "}
+                          {new Date(report.createdAt).toLocaleDateString(
+                            "uk-UA"
+                          )}
+                        </span>
+                      </div>
+                      <div className="report-description">
+                        <p>
+                          <strong>Короткий опис:</strong>{" "}
+                          {report.shortDescription}
+                        </p>
+                        <p>
+                          <strong>Повний опис:</strong> {report.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

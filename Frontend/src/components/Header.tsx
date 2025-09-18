@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./Header.css";
+import adminPanelIcon from "../img/icons/admin-panel.png";
+import logoutIcon from "../img/icons/logout.png";
 
 const Header: React.FC = () => {
   const { isAuthenticated, isAdmin, logout } = useAuth();
@@ -61,39 +63,45 @@ const Header: React.FC = () => {
                 Вакансії
               </Link>
             </li>
+            <li className="nav-item">
+              <Link
+                to="/support"
+                className="nav-link support-btn"
+                onClick={closeMenu}
+              >
+                Підтримати
+              </Link>
+            </li>
           </ul>
 
-          <div className="auth-buttons">
-            <Link
-              to="/support"
-              className="nav-link support-btn"
-              onClick={closeMenu}
-            >
-              Підтримати
-            </Link>
-            {isAuthenticated && (
-              <>
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="nav-link admin-link"
-                    onClick={closeMenu}
-                  >
-                    Адмін
-                  </Link>
-                )}
-                <button
-                  onClick={() => {
-                    logout();
-                    closeMenu();
-                  }}
-                  className="nav-link logout-btn"
+          {isAuthenticated && (
+            <div className="auth-buttons">
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="nav-link admin-link icon-only"
+                  onClick={closeMenu}
+                  title="Адмін панель"
                 >
-                  Вийти
-                </button>
-              </>
-            )}
-          </div>
+                  <img
+                    src={adminPanelIcon}
+                    alt="Адмін панель"
+                    className="icon-image"
+                  />
+                </Link>
+              )}
+              <button
+                onClick={() => {
+                  logout();
+                  closeMenu();
+                }}
+                className="nav-link logout-btn icon-only"
+                title="Вийти"
+              >
+                <img src={logoutIcon} alt="Вийти" className="icon-image" />
+              </button>
+            </div>
+          )}
         </nav>
       </div>
     </header>

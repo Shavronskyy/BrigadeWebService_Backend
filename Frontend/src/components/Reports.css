@@ -17,7 +17,7 @@
 }
 
 .content-section {
-  padding: 100px 20px 80px 20px;
+  padding: 120px 20px 100px 20px;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -39,7 +39,7 @@
   position: relative;
   height: fit-content;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 60px auto 60px auto;
 }
 
 .reports-block h2 {
@@ -328,7 +328,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .content-section {
-    padding: 60px 15px 40px 15px;
+    padding: 100px 15px 60px 15px;
   }
 
   .reports-block {

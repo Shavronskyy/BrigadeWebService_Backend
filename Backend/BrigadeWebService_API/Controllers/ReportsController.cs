@@ -1,6 +1,8 @@
-﻿using BrigadeWebService_BLL.Dto.Reports;
+﻿using BrigadeWebService_API.Controllers.Base;
+using BrigadeWebService_BLL.Dto.Reports;
 using BrigadeWebService_BLL.Options;
 using BrigadeWebService_BLL.Services.Interfaces;
+using BrigadeWebService_DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -8,53 +10,13 @@ namespace BrigadeWebService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ReportsController : Controller
+    public class ReportsController : BaseCRUDController<Report, ReportCreateModel>
     {
         private IReportsService _reportService;
 
-        public ReportsController(IReportsService reportService)
+        public ReportsController(IReportsService reportService) : base(reportService)
         {
             _reportService = reportService;
-        }
-
-        [HttpGet("getAllReports")]
-        public async Task<IActionResult> GetAllReports()
-        {
-            var data = await _reportService.GetAllReportsAsync();
-            return data.Any() ? Ok(data) : NoContent();
-        }
-
-        [HttpPost("createReport")]
-        public async Task<IActionResult> CreateReport([FromBody] ReportCreateModel model)
-        {
-            if (model == null)
-            {
-                return BadRequest("Invalid model");
-            }
-            var report = await _reportService.CreateAsync(model);
-            return report != null ? Ok(report) : BadRequest("Failed to create report");
-        }
-
-        [HttpPut("updateReport")]
-        public async Task<IActionResult> UpdateReport([FromBody] ReportCreateModel model)
-        {
-            if (model == null || model.Id <= 0)
-            {
-                return BadRequest("Invalid model");
-            }
-            var updatedReport = await _reportService.UpdateAsync(model);
-            return updatedReport != null ? Ok(updatedReport) : NotFound("Report not found");
-        }
-
-        [HttpDelete("deleteReport/{id}")]
-        public async Task<IActionResult> DeleteVacancy(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid ID");
-            }
-            var result = await _reportService.DeleteAsync(id);
-            return result ? Ok("Report deleted successfully") : NotFound("Report not found");
         }
 
         [HttpPost("{id:int}/image")]
@@ -76,7 +38,7 @@ namespace BrigadeWebService_API.Controllers
             if (!o.AllowedExtensions.Contains(ext))
                 return BadRequest("Unsupported file type");
 
-            var report = (await _reportService.GetAllReportsAsync()).FirstOrDefault(r => r.Id == id);
+            var report = (await _reportService.GetAllAsync()).FirstOrDefault(r => r.Id == id);
             if (report == null) return NotFound("Report not found");
 
             var yyyy = DateTime.UtcNow.Year.ToString("D4");
@@ -114,7 +76,7 @@ namespace BrigadeWebService_API.Controllers
             int id,
             [FromServices] IWebHostEnvironment env)
         {
-            var report = (await _reportService.GetAllReportsAsync()).FirstOrDefault(r => r.Id == id);
+            var report = (await _reportService.GetAllAsync()).FirstOrDefault(r => r.Id == id);
             if (report == null) return NotFound("Report not found");
 
             if (!string.IsNullOrWhiteSpace(report.Img) && report.Img.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))

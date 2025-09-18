@@ -12,9 +12,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   min-height: 46px;
   position: relative;
 }
@@ -83,6 +83,7 @@
   display: flex;
   align-items: center;
   gap: 30px;
+  flex: 1;
   justify-content: center;
 }
 
@@ -97,7 +98,26 @@
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.icon-only {
+  padding: 12px !important;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .nav-item {
@@ -150,6 +170,10 @@
   box-shadow: 0 3px 10px var(--shadow-brown);
 }
 
+.admin-link .icon-image {
+  filter: brightness(0) invert(1);
+}
+
 .admin-link:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
@@ -159,8 +183,8 @@
 }
 
 .logout-btn {
-  background: #dc3545;
-  border: none;
+  background: #8b0000;
+  border: 2px solid #a52a2a;
   color: #ffffff;
   cursor: pointer;
   font-family: inherit;
@@ -168,13 +192,19 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 3px 10px rgba(139, 0, 0, 0.3);
+}
+
+.logout-btn .icon-image {
+  filter: brightness(0) invert(1);
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
+  background: #a52a2a;
+  border-color: #dc143c;
+  color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(165, 42, 42, 0.4);
 }
 
 .support-btn {
@@ -203,6 +233,7 @@
   .header-container {
     min-height: 80px;
     padding: 0 15px;
+    justify-content: space-between;
   }
 
   .header-left {
@@ -235,8 +266,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
     gap: 20px;
+    z-index: 1000;
     border-left: 1px solid #333333;
   }
 
@@ -270,9 +301,20 @@
   }
 
   .auth-buttons {
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
     margin-left: 0;
+  }
+
+  .icon-only {
+    min-width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
+  .icon-image {
+    width: 24px;
+    height: 24px;
   }
 }
 

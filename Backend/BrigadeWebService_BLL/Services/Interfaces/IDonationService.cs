@@ -1,14 +1,14 @@
 ﻿using BrigadeWebService_BLL.Dto.Donations;
+using BrigadeWebService_BLL.Dto.Reports;
+using BrigadeWebService_BLL.Services.Interfaces.Base;
 using BrigadeWebService_DAL.Entities;
 
 namespace BrigadeWebService_BLL.Services.Interfaces
 {
-    public interface IDonationService
+    public interface IDonationService : IBaseCrudService<Donation, DonationCreateModel>
     {
-        Task<IEnumerable<Donation>> GetAllAsync();
-        Task<Donation?> CreateAsync(DonationCreateModel model);
-        Task<Donation?> UpdateAsync(DonationCreateModel model);
-        Task<bool> DeleteAsync(int id);
         Task<bool> UpdateImageAsync(int donationId, string imgUrl);
+        Task<bool> CreateReportAsync(int id, ReportCreateModel model);
+        Task<bool> ChangeDonationStateAsync(int id);
     }
 }

@@ -602,3 +602,69 @@
     flex-direction: column;
   }
 }
+
+/* Report Styles */
+.donation-report {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(85, 107, 47, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--military-green);
+}
+
+.report-badge {
+  display: inline-block;
+  background: var(--military-green);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-preview {
+  color: var(--text-secondary);
+}
+
+.report-preview strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.report-preview p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.action-btn.report {
+  background: var(--military-green);
+  color: white;
+  border: 2px solid var(--military-green);
+}
+
+.action-btn.report:hover {
+  background: var(--military-gold);
+  border-color: var(--military-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+.action-btn.delete-report {
+  background: #ff6b6b;
+  color: white;
+  border: 2px solid #ff6b6b;
+}
+
+.action-btn.delete-report:hover {
+  background: #ff5252;
+  border-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}

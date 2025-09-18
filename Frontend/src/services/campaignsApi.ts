@@ -1,3 +1,5 @@
+import { getApiUrl } from "../config/api";
+
 export interface Campaign {
   id: number;
   title: string;
@@ -23,13 +25,18 @@ export interface CampaignCreateModel {
 }
 
 class CampaignsApiService {
-  private baseUrl = "http://127.0.0.1:5000/api/Campaigns";
+  private baseUrl = getApiUrl("CAMPAIGNS");
 
   async getAllCampaigns(): Promise<Campaign[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/GetAllCampaigns`);
+      const response = await fetch(`${this.baseUrl}/getAll`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -54,7 +61,7 @@ class CampaignsApiService {
 
   async createCampaign(campaign: CampaignCreateModel): Promise<Campaign> {
     try {
-      const response = await fetch(`${this.baseUrl}/CreateCampaign`, {
+      const response = await fetch(`${this.baseUrl}/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +69,12 @@ class CampaignsApiService {
         body: JSON.stringify(campaign),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -73,7 +85,7 @@ class CampaignsApiService {
 
   async updateCampaign(campaign: CampaignCreateModel): Promise<Campaign> {
     try {
-      const response = await fetch(`${this.baseUrl}/UpdateCampaign`, {
+      const response = await fetch(`${this.baseUrl}/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +93,12 @@ class CampaignsApiService {
         body: JSON.stringify(campaign),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -92,11 +109,16 @@ class CampaignsApiService {
 
   async deleteCampaign(id: number): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/DeleteCampaign/${id}`, {
+      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Error deleting campaign:", error);
@@ -113,7 +135,12 @@ class CampaignsApiService {
         }
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {

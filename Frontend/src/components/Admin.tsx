@@ -16,15 +16,12 @@ const Admin: React.FC = () => {
       <div className="admin-header">
         <div className="container">
           <div className="header-content">
-            <div>
+            <div className="admin-title">
               <h1>Панель адміністратора</h1>
               <p>Управління контентом та налаштування системи</p>
             </div>
-            <div className="user-info">
-              <span>Вітаємо, {user?.username || user?.email}</span>
-              <button onClick={logout} className="logout-admin-btn">
-                Вийти
-              </button>
+            <div className="admin-actions">
+              {/* Admin panel actions can be added here in the future */}
             </div>
           </div>
         </div>

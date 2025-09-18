@@ -1,3 +1,5 @@
+import { getApiUrl, API_CONFIG } from "../config/api";
+
 export interface ReportCreateModel {
   id?: number;
   title: string;
@@ -19,20 +21,25 @@ export interface ImageUploadResponse {
 }
 
 class ReportsApiService {
-  private baseUrl = "http://127.0.0.1:5000/api/Reports";
+  private baseUrl = getApiUrl("REPORTS");
 
   private formatImageUrl(url: string): string {
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    if (url.startsWith("/")) return `http://127.0.0.1:5000${url}`;
-    return `http://127.0.0.1:5000/${url}`;
+    if (url.startsWith("/")) return `${API_CONFIG.BASE_URL}${url}`;
+    return `${API_CONFIG.BASE_URL}/${url}`;
   }
 
   async getAllReports(): Promise<Report[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/GetAllReports`);
+      const response = await fetch(`${this.baseUrl}/getAll`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const reports: any[] = await response.json();
@@ -50,7 +57,7 @@ class ReportsApiService {
 
   async createReport(report: ReportCreateModel): Promise<Report> {
     try {
-      const response = await fetch(`${this.baseUrl}/CreateReport`, {
+      const response = await fetch(`${this.baseUrl}/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +65,12 @@ class ReportsApiService {
         body: JSON.stringify(report),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const result: any = await response.json();
@@ -76,7 +88,7 @@ class ReportsApiService {
 
   async updateReport(report: ReportCreateModel): Promise<Report> {
     try {
-      const response = await fetch(`${this.baseUrl}/UpdateReport`, {
+      const response = await fetch(`${this.baseUrl}/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +96,12 @@ class ReportsApiService {
         body: JSON.stringify(report),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const result: any = await response.json();
@@ -102,11 +119,16 @@ class ReportsApiService {
 
   async deleteReport(id: number): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/DeleteReport/${id}`, {
+      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Error deleting report:", error);
@@ -128,14 +150,19 @@ class ReportsApiService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
 
       // Convert relative URL to absolute URL if needed
       if (result.url && !result.url.startsWith("http")) {
-        result.url = `http://127.0.0.1:5000${result.url}`;
+        result.url = `${API_CONFIG.BASE_URL}${result.url}`;
       }
 
       return result;
@@ -152,7 +179,12 @@ class ReportsApiService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Error deleting image:", error);

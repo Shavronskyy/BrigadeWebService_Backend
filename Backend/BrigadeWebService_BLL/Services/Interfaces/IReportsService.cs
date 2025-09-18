@@ -1,14 +1,11 @@
 ﻿using BrigadeWebService_BLL.Dto.Reports;
+using BrigadeWebService_BLL.Services.Interfaces.Base;
 using BrigadeWebService_DAL.Entities;
 
 namespace BrigadeWebService_BLL.Services.Interfaces
 {
-    public interface IReportsService
+    public interface IReportsService : IBaseCrudService<Report, ReportCreateModel>
     {
-        Task<IEnumerable<Report>> GetAllReportsAsync();
-        Task<Report?> CreateAsync(ReportCreateModel model);
-        Task<Report?> UpdateAsync(ReportCreateModel model);
-        Task<bool> DeleteAsync(int id);
         Task<bool> UpdateImageAsync(int reportId, string imgUrl);
     }
 }

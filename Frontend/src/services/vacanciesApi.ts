@@ -1,3 +1,5 @@
+import { getApiUrl } from "../config/api";
+
 export interface VacancyCreateModel {
   id?: number;
   title: string;
@@ -16,13 +18,18 @@ export interface Vacancy extends VacancyCreateModel {
 }
 
 class VacanciesApiService {
-  private baseUrl = "http://127.0.0.1:5000/api/Vacancy";
+  private baseUrl = getApiUrl("VACANCIES");
 
   async getAllVacancies(): Promise<Vacancy[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/GetAllVacancies`);
+      const response = await fetch(`${this.baseUrl}/getAll`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -33,7 +40,7 @@ class VacanciesApiService {
 
   async createVacancy(vacancy: VacancyCreateModel): Promise<Vacancy> {
     try {
-      const response = await fetch(`${this.baseUrl}/CreateVacancy`, {
+      const response = await fetch(`${this.baseUrl}/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +48,12 @@ class VacanciesApiService {
         body: JSON.stringify(vacancy),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -52,7 +64,7 @@ class VacanciesApiService {
 
   async updateVacancy(vacancy: VacancyCreateModel): Promise<Vacancy> {
     try {
-      const response = await fetch(`${this.baseUrl}/UpdateVacancy`, {
+      const response = await fetch(`${this.baseUrl}/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +72,12 @@ class VacanciesApiService {
         body: JSON.stringify(vacancy),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     } catch (error) {
@@ -71,11 +88,16 @@ class VacanciesApiService {
 
   async deleteVacancy(id: number): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/DeleteVacancy/${id}`, {
+      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message ||
+          errorData.title ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Error deleting vacancy:", error);

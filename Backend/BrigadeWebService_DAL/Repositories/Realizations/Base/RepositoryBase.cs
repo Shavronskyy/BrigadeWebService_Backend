@@ -23,7 +23,7 @@ namespace BrigadeWebService_DAL.Repositories.Realizations.Base
             return await _dbContext.Set<T>().ToListAsync();
         }
         /// inheritdoc />
-        public async Task<T?> GetById(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
         }

@@ -1,6 +1,8 @@
-﻿namespace BrigadeWebService_BLL.Dto.Donations
+﻿using BrigadeWebService_BLL.Dto.Base;
+
+namespace BrigadeWebService_BLL.Dto.Donations
 {
-    public class DonationCreateModel
+    public class DonationCreateModel : ICreateModel
     {
         public int Id { get; set; }
         public string Title { get; set; }
