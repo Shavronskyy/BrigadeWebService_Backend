@@ -38,7 +38,14 @@ class CampaignsApiService {
           `HTTP error! status: ${response.status}`;
         throw new Error(errorMessage);
       }
-      return await response.json();
+
+      // Check if response is empty
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === "") {
+        return [];
+      }
+
+      return JSON.parse(responseText);
     } catch (error) {
       console.error("Error fetching campaigns:", error);
       throw error;

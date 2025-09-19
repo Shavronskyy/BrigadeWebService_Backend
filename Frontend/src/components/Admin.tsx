@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import "./Admin.css";
 import AdminVacancies from "./AdminVacancies";
-import AdminReports from "./AdminReports";
 import AdminDonations from "./AdminDonations";
 
-type AdminSection = "vacancies" | "reports" | "donations";
+type AdminSection = "vacancies" | "donations";
 
 const Admin: React.FC = () => {
   const { user, logout } = useAuth();
@@ -41,15 +40,6 @@ const Admin: React.FC = () => {
             </button>
             <button
               className={`nav-btn ${
-                activeSection === "reports" ? "active" : ""
-              }`}
-              onClick={() => setActiveSection("reports")}
-            >
-              <span className="nav-icon">📊</span>
-              Звіти
-            </button>
-            <button
-              className={`nav-btn ${
                 activeSection === "donations" ? "active" : ""
               }`}
               onClick={() => setActiveSection("donations")}
@@ -61,7 +51,6 @@ const Admin: React.FC = () => {
 
           <div className="admin-section">
             {activeSection === "vacancies" && <AdminVacancies />}
-            {activeSection === "reports" && <AdminReports />}
             {activeSection === "donations" && <AdminDonations />}
           </div>
         </div>

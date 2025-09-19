@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: "http://localhost:3000",
+  BASE_URL: "http://localhost:5192",
   ENDPOINTS: {
     DONATIONS: "/api/Donations",
     CAMPAIGNS: "/api/Campaigns",

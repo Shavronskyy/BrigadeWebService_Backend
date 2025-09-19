@@ -5,5 +5,6 @@ namespace BrigadeWebService_DAL.Repositories.Interfaces.Reports
 {
     public interface IReportRepository : IRepositoryBase<Report>
     {
+        Task<IEnumerable<Report>> GetReportsByDonationIdAsync(int donationId);
     }
 }

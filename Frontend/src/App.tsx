@@ -4,7 +4,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Home from "./components/Home";
-import Reports from "./components/Reports";
 import Contacts from "./components/Contacts";
 import Vacancies from "./components/Vacancies";
 import Support from "./components/Support";
@@ -31,7 +30,6 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/reports" element={<Reports />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/vacancies" element={<Vacancies />} />
             <Route path="/support" element={<Support />} />

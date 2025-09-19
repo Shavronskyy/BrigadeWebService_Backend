@@ -49,11 +49,6 @@ const Header: React.FC = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/reports" className="nav-link" onClick={closeMenu}>
-                Звітність
-              </Link>
-            </li>
-            <li className="nav-item">
               <Link to="/contacts" className="nav-link" onClick={closeMenu}>
                 Контакти
               </Link>

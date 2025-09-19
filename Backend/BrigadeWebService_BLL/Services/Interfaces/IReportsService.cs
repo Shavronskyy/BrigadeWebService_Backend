@@ -4,8 +4,9 @@ using BrigadeWebService_DAL.Entities;
 
 namespace BrigadeWebService_BLL.Services.Interfaces
 {
-    public interface IReportsService : IBaseCrudService<Report, ReportCreateModel>
+    public interface IReportsService : IBaseCrudService<Report, ReportCreateModel, ReportUpdateModel>
     {
         Task<bool> UpdateImageAsync(int reportId, string imgUrl);
+        Task<IEnumerable<Report>> GetReportsByDonationIdAsync(int donationId);
     }
 }

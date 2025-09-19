@@ -10,7 +10,7 @@ namespace BrigadeWebService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ReportsController : BaseCRUDController<Report, ReportCreateModel>
+    public class ReportsController : BaseCRUDController<Report, ReportCreateModel, ReportUpdateModel>
     {
         private IReportsService _reportService;
 

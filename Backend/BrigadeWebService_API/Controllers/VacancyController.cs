@@ -8,7 +8,7 @@ namespace BrigadeWebService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VacancyController : BaseCRUDController<Vacancy, VacancyCreateModel>
+    public class VacancyController : BaseCRUDController<Vacancy, VacancyCreateModel, VacancyUpdateModel>
     {
         private IVacanciesService _vacancyService;
 

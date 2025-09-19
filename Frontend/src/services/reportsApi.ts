@@ -42,7 +42,13 @@ class ReportsApiService {
         throw new Error(errorMessage);
       }
 
-      const reports: any[] = await response.json();
+      // Check if response is empty
+      const responseText = await response.text();
+      if (!responseText || responseText.trim() === "") {
+        return [];
+      }
+
+      const reports: any[] = JSON.parse(responseText);
 
       // Format image URLs for all reports
       return reports.map((report: any) => ({

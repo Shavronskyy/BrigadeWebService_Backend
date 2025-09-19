@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { API_CONFIG } from "../config/api";
 import "./Login.css";
 
 interface LoginForm {
@@ -50,7 +51,7 @@ const Login: React.FC = () => {
 
     try {
       // Call backend API directly
-      const url = "http://127.0.0.1:5000/api/Auth/login";
+      const url = `${API_CONFIG.BASE_URL}/api/Auth/login`;
       const isEmail = formData.username.includes("@");
       const requestBody = isEmail
         ? { email: formData.username, password: formData.password }

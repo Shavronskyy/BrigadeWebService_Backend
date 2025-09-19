@@ -27,7 +27,9 @@ const Home: React.FC = () => {
               </button>
             </div>
             <div className="hero-right">
-              <button className="hero-btn">Підтримати</button>
+              <button className="hero-btn" onClick={() => navigate("/support")}>
+                Підтримати
+              </button>
             </div>
           </div>
         </div>

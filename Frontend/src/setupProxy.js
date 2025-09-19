@@ -1,15 +1,16 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 module.exports = function (app) {
+  const API_BASE_URL = "http://localhost:3000";
   console.log(
-    "[setupProxy] Configuring proxy for auth and other endpoints to http://127.0.0.1:5000"
+    `[setupProxy] Configuring proxy for auth and other endpoints to ${API_BASE_URL}`
   );
 
   // Proxy for auth and other endpoints (but not vacancies)
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "http://127.0.0.1:5000",
+      target: API_BASE_URL,
       changeOrigin: true,
       secure: false,
       logLevel: "debug",

@@ -4,10 +4,8 @@ export interface Report {
   id: number;
   title: string;
   description: string;
-  shortDescription: string;
   category: string;
   img: string;
-  isPublished: boolean;
   createdAt: string;
   donationId: number;
 }
@@ -39,10 +37,8 @@ export interface ReportCreateModel {
   id?: number;
   title: string;
   description: string;
-  shortDescription: string;
   category: string;
   img: string;
-  isPublished: boolean;
   donationId: number;
   createdAt: string;
 }
@@ -63,17 +59,52 @@ class DonationsApiService {
 
   async getAllDonations(): Promise<Donation[]> {
     try {
+      console.log("Fetching donations from:", `${this.baseUrl}/getAll`);
       const response = await fetch(`${this.baseUrl}/getAll`);
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage =
-          errorData.message ||
-          errorData.title ||
-          `HTTP error! status: ${response.status}`;
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData.message ||
+            errorData.title ||
+            errorData.detail ||
+            errorData.error ||
+            errorData.exception ||
+            errorMessage;
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          const textResponse = await response.text().catch(() => "");
+          console.log("Error response text:", textResponse);
+          errorMessage = textResponse || errorMessage;
+        }
         throw new Error(errorMessage);
       }
 
-      const donations: any[] = await response.json();
+      // Check if response has content
+      const contentType = response.headers.get("content-type");
+      console.log("Response content-type:", contentType);
+
+      // Check if response is empty
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+
+      if (!responseText || responseText.trim() === "") {
+        console.log("Empty response received, returning empty array");
+        return [];
+      }
+
+      if (!contentType || !contentType.includes("application/json")) {
+        console.log("Non-JSON response:", responseText);
+        throw new Error("Server returned non-JSON response");
+      }
+
+      const donations: any[] = JSON.parse(responseText);
+      console.log("Fetched donations:", donations);
 
       // Format image URLs for all donations and their reports
       return donations.map((donation: any) => ({
@@ -251,10 +282,8 @@ class DonationsApiService {
         id: reportData.id,
         title: reportData.title,
         description: reportData.description,
-        shortDescription: reportData.shortDescription,
         category: reportData.category,
         img: reportData.img,
-        isPublished: reportData.isPublished,
         donationId: donationId, // Include donationId in the body
         createdAt: reportData.createdAt,
       };
@@ -307,33 +336,110 @@ class DonationsApiService {
     }
   }
 
-  async toggleDonationStatus(id: number): Promise<Donation> {
+  async toggleDonationStatus(id: number): Promise<void> {
     try {
+      console.log("Toggling donation status for ID:", id);
       const response = await fetch(`${this.baseUrl}/${id}/completeDonation`, {
         method: "PATCH",
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage =
-          errorData.message ||
-          errorData.title ||
-          `HTTP error! status: ${response.status}`;
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData.message ||
+            errorData.title ||
+            errorData.detail ||
+            errorData.error ||
+            errorData.exception ||
+            errorMessage;
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          const textResponse = await response.text().catch(() => "");
+          console.log("Error response text:", textResponse);
+          errorMessage = textResponse || errorMessage;
+        }
         throw new Error(errorMessage);
       }
 
-      const result: any = await response.json();
-      return {
-        ...result,
-        img: this.formatImageUrl(result.img),
-        reports:
-          result.reports?.map((report: any) => ({
-            ...report,
-            img: this.formatImageUrl(report.img),
-          })) || [],
-      };
+      // Check if response has content
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+
+      if (!responseText || responseText.trim() === "") {
+        console.log("Empty response received - status updated successfully");
+        // Backend returned Ok() without body - this is expected
+        return;
+      }
+
+      // If there is content, try to parse it
+      try {
+        const result: any = JSON.parse(responseText);
+        console.log("Parsed result:", result);
+        // If we get here, the backend returned data, but we don't need it
+        // since we're just toggling status
+      } catch (parseError) {
+        console.log("Response is not JSON, treating as success");
+        // Non-JSON response is also fine for a status toggle
+      }
     } catch (error) {
       console.error("Error toggling donation status:", error);
+      throw error;
+    }
+  }
+
+  async getReportsByDonationId(id: number): Promise<Report[]> {
+    try {
+      console.log("Fetching reports for donation ID:", id);
+      const response = await fetch(
+        `${this.baseUrl}/getReportsByDonationId/${id}`
+      );
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData.message ||
+            errorData.title ||
+            errorData.detail ||
+            errorData.error ||
+            errorData.exception ||
+            errorMessage;
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          const textResponse = await response.text().catch(() => "");
+          console.log("Error response text:", textResponse);
+          errorMessage = textResponse || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Check if response is empty
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+
+      if (!responseText || responseText.trim() === "") {
+        console.log("Empty response received, returning empty array");
+        return [];
+      }
+
+      const reports: any[] = JSON.parse(responseText);
+      console.log("Fetched reports for donation:", reports);
+
+      // Format image URLs for all reports
+      return reports.map((report: any) => ({
+        ...report,
+        img: this.formatImageUrl(report.img),
+      }));
+    } catch (error) {
+      console.error("Error fetching reports by donation ID:", error);
       throw error;
     }
   }

@@ -17,7 +17,6 @@ interface DonationFormData {
 interface ReportFormData {
   title: string;
   description: string;
-  shortDescription: string;
   category: string;
 }
 
@@ -51,7 +50,6 @@ const AdminDonations: React.FC = () => {
   const [reportFormData, setReportFormData] = useState<ReportFormData>({
     title: "",
     description: "",
-    shortDescription: "",
     category: "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -64,14 +62,61 @@ const AdminDonations: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
+        console.log("AdminDonations: Starting to fetch donations...");
         const data = await donationsApiService.getAllDonations();
-        setDonations(data);
+        console.log("AdminDonations: Successfully fetched donations:", data);
+
+        // Fetch reports for each donation
+        const donationsWithReports = await Promise.all(
+          data.map(async (donation) => {
+            try {
+              console.log(`Fetching reports for donation ${donation.id}...`);
+              const reports = await donationsApiService.getReportsByDonationId(
+                donation.id
+              );
+              console.log(`Reports for donation ${donation.id}:`, reports);
+              return {
+                ...donation,
+                reports: reports,
+              };
+            } catch (reportError) {
+              console.error(
+                `Failed to fetch reports for donation ${donation.id}:`,
+                reportError
+              );
+              // Return donation without reports if fetching reports fails
+              return {
+                ...donation,
+                reports: [],
+              };
+            }
+          })
+        );
+
+        console.log(
+          "AdminDonations: Donations with reports:",
+          donationsWithReports
+        );
+        setDonations(donationsWithReports);
       } catch (error) {
-        console.error("Failed to fetch donations:", error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Помилка завантаження зборів";
+        console.error("AdminDonations: Failed to fetch donations:", error);
+        let errorMessage = "Помилка завантаження зборів";
+
+        if (error instanceof Error) {
+          if (error.message.includes("Unexpected end of JSON input")) {
+            errorMessage =
+              "Сервер повернув порожню відповідь. Можливо, дані ще не додані.";
+          } else if (error.message.includes("Failed to fetch")) {
+            errorMessage =
+              "Не вдалося підключитися до сервера. Перевірте налаштування API.";
+          } else if (error.message.includes("non-JSON response")) {
+            errorMessage =
+              "Сервер повернув некоректну відповідь. Перевірте налаштування API.";
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -120,7 +165,6 @@ const AdminDonations: React.FC = () => {
     setReportFormData({
       title: "",
       description: "",
-      shortDescription: "",
       category: "",
     });
     setSelectedReportImage(null);
@@ -133,7 +177,6 @@ const AdminDonations: React.FC = () => {
     setReportFormData({
       title: "",
       description: "",
-      shortDescription: "",
       category: "",
     });
     setSelectedReportImage(null);
@@ -247,10 +290,8 @@ const AdminDonations: React.FC = () => {
       const reportData: ReportCreateModel = {
         title: reportFormData.title,
         description: reportFormData.description,
-        shortDescription: reportFormData.shortDescription,
         category: reportFormData.category,
         img: "",
-        isPublished: true,
         donationId: reportDonation.id, // This will be used for the API call
         createdAt: new Date().toISOString(),
       };
@@ -325,15 +366,19 @@ const AdminDonations: React.FC = () => {
       const donation = donations.find((d) => d.id === id);
       if (!donation) return;
 
-      const updatedDonation: DonationCreateModel = {
-        ...donation,
-        isCompleted: !donation.isCompleted,
-      };
+      await donationsApiService.toggleDonationStatus(id);
 
-      const result = await donationsApiService.updateDonation(updatedDonation);
-      setDonations((prev) => prev.map((d) => (d.id === id ? result : d)));
+      // Update local state by toggling the isCompleted status
+      setDonations((prev) =>
+        prev.map((d) =>
+          d.id === id ? { ...d, isCompleted: !d.isCompleted } : d
+        )
+      );
+
       showNotification(
-        result.isCompleted ? "Збір позначено як завершений" : "Збір активовано",
+        !donation.isCompleted
+          ? "Збір позначено як завершений"
+          : "Збір активовано",
         "success"
       );
     } catch (error) {
@@ -375,115 +420,116 @@ const AdminDonations: React.FC = () => {
           {donations.length === 0 ? (
             <div className="no-donations">Ви ще не додали жодного збору</div>
           ) : (
-            donations.map((donation) => (
-              <div key={donation.id} className="donation-item">
-                {donation.img ? (
-                  <img
-                    src={donation.img}
-                    alt={donation.title}
-                    className="donation-image"
-                  />
-                ) : (
-                  <div
-                    className="donation-image"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.1)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "rgba(255,255,255,0.6)",
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    Немає фото
-                  </div>
-                )}
-
-                <div className="donation-content">
-                  <h3 className="donation-title">{donation.title}</h3>
-                  <div className="donation-details">
-                    <span className="donation-goal">
-                      Мета: {donation.goal.toLocaleString()} ₴
-                    </span>
-                    <span className="donation-date">
-                      {new Date(donation.creationDate).toLocaleDateString(
-                        "uk-UA"
-                      )}
-                    </span>
-                  </div>
-                  {donation.reports && donation.reports.length > 0 && (
-                    <div className="donation-report">
-                      <div className="report-badge">
-                        📊 Звіт ({donation.reports.length})
-                      </div>
-                      {donation.reports.map((report, index) => (
-                        <div key={report.id} className="report-preview">
-                          <strong>{report.title}</strong>
-                          <p>{report.shortDescription}</p>
-                          <small>Категорія: {report.category}</small>
-                        </div>
-                      ))}
+            donations.map((donation) => {
+              console.log(`Rendering donation ${donation.id}:`, donation);
+              console.log(
+                `Reports for donation ${donation.id}:`,
+                donation.reports
+              );
+              return (
+                <div key={donation.id} className="donation-item">
+                  {donation.img ? (
+                    <img
+                      src={donation.img}
+                      alt={donation.title}
+                      className="donation-image"
+                    />
+                  ) : (
+                    <div
+                      className="donation-image"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "rgba(255,255,255,0.6)",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      Немає фото
                     </div>
                   )}
-                </div>
 
-                <div className="donation-status">
-                  <span
-                    className={`status-badge ${
-                      donation.isCompleted ? "completed" : "active"
-                    }`}
-                  >
-                    {donation.isCompleted ? "Завершено" : "Активний"}
-                  </span>
-                </div>
-
-                <div className="donation-actions">
-                  <button
-                    className="action-btn edit"
-                    onClick={() => openModal(donation)}
-                    title="Редагувати"
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    className="action-btn report"
-                    onClick={() => openReportModal(donation)}
-                    title={
-                      donation.reports && donation.reports.length > 0
-                        ? "Додати ще звіт"
-                        : "Додати звіт"
-                    }
-                  >
-                    📊
-                  </button>
-                  {donation.reports && donation.reports.length > 0 && (
+                  <div className="donation-content">
+                    <h3 className="donation-title">{donation.title}</h3>
+                    <div className="donation-details">
+                      <span className="donation-goal">
+                        Мета: {donation.goal.toLocaleString()} ₴
+                      </span>
+                      <span className="donation-date">
+                        {new Date(donation.creationDate).toLocaleDateString(
+                          "uk-UA"
+                        )}
+                      </span>
+                    </div>
                     <button
-                      className="action-btn delete-report"
-                      onClick={() => deleteReport(donation.id)}
-                      title="Видалити звіти"
+                      className="reports-button"
+                      onClick={() => openReportModal(donation)}
+                      title="Переглянути звіти"
+                    >
+                      📊 Звіти про використання коштів (
+                      {donation.reports ? donation.reports.length : 0})
+                    </button>
+                  </div>
+
+                  <div className="donation-status">
+                    <span
+                      className={`status-badge ${
+                        donation.isCompleted ? "completed" : "active"
+                      }`}
+                    >
+                      {donation.isCompleted ? "Завершено" : "Активний"}
+                    </span>
+                  </div>
+
+                  <div className="donation-actions">
+                    <button
+                      className="action-btn edit"
+                      onClick={() => openModal(donation)}
+                      title="Редагувати"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="action-btn report"
+                      onClick={() => openReportModal(donation)}
+                      title={
+                        donation.reports && donation.reports.length > 0
+                          ? "Додати ще звіт"
+                          : "Додати звіт"
+                      }
+                    >
+                      📊
+                    </button>
+                    {donation.reports && donation.reports.length > 0 && (
+                      <button
+                        className="action-btn delete-report"
+                        onClick={() => deleteReport(donation.id)}
+                        title="Видалити звіти"
+                      >
+                        🗑️
+                      </button>
+                    )}
+                    <button
+                      className="action-btn toggle"
+                      onClick={() => toggleDonationStatus(donation.id)}
+                      title={donation.isCompleted ? "Активувати" : "Завершити"}
+                    >
+                      {donation.isCompleted ? "🔄" : "✅"}
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() =>
+                        openDeleteConfirm(donation.id, donation.title)
+                      }
+                      title="Видалити"
                     >
                       🗑️
                     </button>
-                  )}
-                  <button
-                    className="action-btn toggle"
-                    onClick={() => toggleDonationStatus(donation.id)}
-                    title={donation.isCompleted ? "Активувати" : "Завершити"}
-                  >
-                    {donation.isCompleted ? "🔄" : "✅"}
-                  </button>
-                  <button
-                    className="action-btn delete"
-                    onClick={() =>
-                      openDeleteConfirm(donation.id, donation.title)
-                    }
-                    title="Видалити"
-                  >
-                    🗑️
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       )}
@@ -618,18 +664,6 @@ const AdminDonations: React.FC = () => {
                   id="title"
                   name="title"
                   value={reportFormData.title}
-                  onChange={handleReportInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="shortDescription">Короткий опис *</label>
-                <input
-                  type="text"
-                  id="shortDescription"
-                  name="shortDescription"
-                  value={reportFormData.shortDescription}
                   onChange={handleReportInputChange}
                   required
                 />

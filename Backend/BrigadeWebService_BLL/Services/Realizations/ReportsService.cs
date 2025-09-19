@@ -7,7 +7,7 @@ using BrigadeWebService_DAL.Repositories.Interfaces.Reports;
 
 namespace BrigadeWebService_BLL.Services.Realizations
 {
-    public class ReportsService : BaseCrudService<Report, ReportCreateModel>, IReportsService
+    public class ReportsService : BaseCrudService<Report, ReportCreateModel, ReportUpdateModel>, IReportsService
     {
         private readonly IReportRepository _reportRepository;
         private readonly IMapper _mapper;
@@ -26,5 +26,9 @@ namespace BrigadeWebService_BLL.Services.Realizations
             return await _reportRepository.SaveChangesAsync() == 1;
         }
 
+        public async Task<IEnumerable<Report>> GetReportsByDonationIdAsync(int donationId)
+        {
+            return await _reportRepository.GetReportsByDonationIdAsync(donationId);
+        }
     }
 }

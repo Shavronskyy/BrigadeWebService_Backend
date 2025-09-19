@@ -4,7 +4,7 @@ using BrigadeWebService_DAL.Entities;
 
 namespace BrigadeWebService_BLL.Services.Interfaces
 {
-    public interface IVacanciesService : IBaseCrudService<Vacancy, VacancyCreateModel>
+    public interface IVacanciesService : IBaseCrudService<Vacancy, VacancyCreateModel, VacancyUpdateModel>
     {
     }
 }

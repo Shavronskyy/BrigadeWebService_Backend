@@ -7,7 +7,7 @@ using BrigadeWebService_DAL.Repositories.Interfaces.Vacancies;
 
 namespace BrigadeWebService_BLL.Services.Realizations
 {
-    public class VacanciesService : BaseCrudService<Vacancy, VacancyCreateModel>, IVacanciesService
+    public class VacanciesService : BaseCrudService<Vacancy, VacancyCreateModel, VacancyUpdateModel>, IVacanciesService
     {
         private readonly IVacancyRepository _vacancyRepository;
         private readonly IMapper _mapper;

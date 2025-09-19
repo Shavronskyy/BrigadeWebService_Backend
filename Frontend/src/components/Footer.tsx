@@ -13,9 +13,6 @@ const Footer: React.FC = () => {
             <a href="/vacancies" className="footer-link">
               Вакансії
             </a>
-            <a href="/reports" className="footer-link">
-              Звіти
-            </a>
             <a href="/contacts" className="footer-link">
               Контакти
             </a>

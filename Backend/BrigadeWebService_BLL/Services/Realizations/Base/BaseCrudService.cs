@@ -6,10 +6,11 @@ using BrigadeWebService_DAL.Repositories.Interfaces.Base;
 
 namespace BrigadeWebService_BLL.Services.Realizations.Base
 {
-    public class BaseCrudService<TEntity, TCreateModel>
-    : IBaseCrudService<TEntity, TCreateModel>
-    where TEntity : class, IBaseEntity
-    where TCreateModel : class, ICreateModel
+    public class BaseCrudService<TEntity, TCreateModel, TUpdateModel>
+    : IBaseCrudService<TEntity, TCreateModel, TUpdateModel>
+    where TEntity : IBaseEntity
+    where TCreateModel : ICreateModel
+    where TUpdateModel : IUpdateModel
     {
         private readonly IRepositoryBase<TEntity> _repository;
         private readonly IMapper _mapper;
@@ -22,7 +23,7 @@ namespace BrigadeWebService_BLL.Services.Realizations.Base
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await _repository.GetAll();
+            return await _repository.GetAllAsync();
         }
 
         public async Task<TEntity?> CreateAsync(TCreateModel model)
@@ -34,10 +35,10 @@ namespace BrigadeWebService_BLL.Services.Realizations.Base
                 await _repository.SaveChangesAsync();
                 return vacancy;
             }
-            return null;
+            throw new InvalidOperationException($"Exception with creating of object type of {model}");
         }
 
-        public async Task<TEntity?> UpdateAsync(TCreateModel model)
+        public async Task<TEntity?> UpdateAsync(TUpdateModel model)
         {
             var vacancy = await _repository.GetByIdAsync(model.Id);
             if (vacancy == null)
@@ -46,7 +47,7 @@ namespace BrigadeWebService_BLL.Services.Realizations.Base
             }
             _mapper.Map(model, vacancy);
 
-            return await _repository.SaveChangesAsync() == 1 ? vacancy : null;
+            return await _repository.SaveChangesAsync() == 1 ? vacancy : throw new InvalidOperationException($"Exception with updating of object type of {model}"); ;
         }
 
         public async Task<bool> DeleteAsync(int id)

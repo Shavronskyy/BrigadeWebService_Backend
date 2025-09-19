@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BrigadeWebService_API.Controllers.Base
 {
-    public class BaseCRUDController<TEntity, TCreateModel> : Controller
+    public class BaseCRUDController<TEntity, TCreateModel, TUpdateModel> : Controller
         where TEntity : IBaseEntity
         where TCreateModel : ICreateModel
+        where TUpdateModel : IUpdateModel
     {
-        IBaseCrudService<TEntity, TCreateModel> _service;
+        IBaseCrudService<TEntity, TCreateModel, TUpdateModel> _service;
 
-        public BaseCRUDController(IBaseCrudService<TEntity, TCreateModel> service)
+        public BaseCRUDController(IBaseCrudService<TEntity, TCreateModel, TUpdateModel> service)
         {
             _service = service;
         }
@@ -35,7 +36,7 @@ namespace BrigadeWebService_API.Controllers.Base
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> Update([FromBody] TCreateModel model)
+        public async Task<IActionResult> Update([FromBody] TUpdateModel model)
         {
             if (model == null || model.Id <= 0)
             {

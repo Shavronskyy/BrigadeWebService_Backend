@@ -3,13 +3,13 @@ using System.Linq.Expressions;
 
 namespace BrigadeWebService_DAL.Repositories.Interfaces.Base
 {
-    public interface IRepositoryBase<T> where T : class, IBaseEntity
+    public interface IRepositoryBase<T> where T : IBaseEntity
     {
         /// <summary>
         /// Returns all entities of type T from the database.
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetAllAsync();
         /// <summary>
         /// Returns an entity of type T by its ID.
         /// </summary>

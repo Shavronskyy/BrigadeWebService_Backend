@@ -18,7 +18,7 @@ namespace BrigadeWebService_DAL.Repositories.Realizations.Base
 
         #region Get
         /// inheritdoc />
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbContext.Set<T>().ToListAsync();
         }
@@ -31,6 +31,11 @@ namespace BrigadeWebService_DAL.Repositories.Realizations.Base
         public async Task<T?> GetByCondition(Expression<Func<T, bool>> predicate)
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<IEnumerable<T>> GetAllByCondition(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbContext.Set<T>().Where(predicate).ToListAsync();
         }
         #endregion Get
 

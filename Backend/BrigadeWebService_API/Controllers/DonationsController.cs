@@ -11,7 +11,7 @@ namespace BrigadeWebService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DonationsController : BaseCRUDController<Donation, DonationCreateModel>
+    public class DonationsController : BaseCRUDController<Donation, DonationCreateModel, DonationUpdateModel>
     {
         private IDonationService _donationService;
 
@@ -20,18 +20,25 @@ namespace BrigadeWebService_API.Controllers
             _donationService = donationService;
         }
 
-        [HttpPost("{id:int}/createReport")]
-        public async Task<IActionResult> AddReport([FromQuery] int id, [FromBody] ReportCreateModel model)
+        [HttpPost("{id}/createReport")]
+        public async Task<IActionResult> AddReport([FromRoute] int id, [FromBody] ReportCreateModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             return await _donationService.CreateReportAsync(id, model) ? Ok() : BadRequest("Failed to create report for donation");
         }
 
-        [HttpPatch("{id:int}/completeDonation")]
-        public async Task<IActionResult> CompleteDonation([FromQuery] int id)
+        [HttpPatch("{id}/completeDonation")]
+        public async Task<IActionResult> CompleteDonation([FromRoute] int id)
         {
             return await _donationService.ChangeDonationStateAsync(id) ? Ok() : BadRequest("Failed to create report for donation");
+        }
+
+        [HttpGet("getReportsByDonationId/{id}")]
+        public async Task<IActionResult> GetReportsByDonationId([FromRoute] int id)
+        {
+            var report = await _donationService.GetReportsByDonationIdAsync(id);
+            return report.Any() ? Ok(report) : BadRequest("Failed to create report for donation");
         }
 
         #region Images
