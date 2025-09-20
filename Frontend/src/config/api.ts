@@ -5,7 +5,9 @@ export const API_CONFIG = {
     CAMPAIGNS: "/api/Campaigns",
     REPORTS: "/api/Reports",
     VACANCIES: "/api/Vacancy",
+    CONTACT: "/api/Contact",
   },
+  CONTACT_EMAIL: "dima.shavronskyi@gmail.com",
 };
 
 export const getApiUrl = (endpoint: keyof typeof API_CONFIG.ENDPOINTS) => {

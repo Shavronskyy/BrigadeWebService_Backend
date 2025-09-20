@@ -3,11 +3,14 @@ import "./Vacancies.css";
 import { vacanciesApiService, Vacancy } from "../services/vacanciesApi";
 import vacanciesBackImage from "../img/backgrounds/Vacancies/Vacancies-back.jpg";
 import Footer from "./Footer";
+import VacancyApplicationPopup from "./VacancyApplicationPopup";
 
 const Vacancies: React.FC = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedVacancy, setExpandedVacancy] = useState<number | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedVacancyTitle, setSelectedVacancyTitle] = useState("");
 
   useEffect(() => {
     const fetchVacancies = async () => {
@@ -26,6 +29,16 @@ const Vacancies: React.FC = () => {
 
   const toggleVacancy = (vacancyId: number) => {
     setExpandedVacancy(expandedVacancy === vacancyId ? null : vacancyId);
+  };
+
+  const handleApplyClick = (vacancyTitle: string) => {
+    setSelectedVacancyTitle(vacancyTitle);
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedVacancyTitle("");
   };
 
   return (
@@ -68,7 +81,10 @@ const Vacancies: React.FC = () => {
                       <div className="vacancy-short-description">
                         {vacancy.description}
                       </div>
-                      <button className="apply-btn-accordion">
+                      <button
+                        className="apply-btn-accordion"
+                        onClick={() => handleApplyClick(vacancy.title)}
+                      >
                         ПОДАТИ ЗАЯВКУ
                       </button>
                     </div>
@@ -80,6 +96,12 @@ const Vacancies: React.FC = () => {
         </div>
       </div>
       <Footer />
+
+      <VacancyApplicationPopup
+        isOpen={isPopupOpen}
+        onClose={handleClosePopup}
+        vacancyTitle={selectedVacancyTitle}
+      />
     </div>
   );
 };

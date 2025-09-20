@@ -24,8 +24,10 @@ const AdminDonations: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isReportsListModalOpen, setIsReportsListModalOpen] = useState(false);
   const [editingDonation, setEditingDonation] = useState<Donation | null>(null);
   const [reportDonation, setReportDonation] = useState<Donation | null>(null);
+  const [editingReport, setEditingReport] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
@@ -160,26 +162,49 @@ const AdminDonations: React.FC = () => {
     setSelectedImage(null);
   };
 
-  const openReportModal = (donation: Donation) => {
+  const openReportModal = (donation: Donation, report?: any) => {
     setReportDonation(donation);
-    setReportFormData({
-      title: "",
-      description: "",
-      category: "",
-    });
+    if (report) {
+      // Editing existing report
+      setEditingReport(report);
+      setReportFormData({
+        title: report.title || "",
+        description: report.description || "",
+        category: report.category || "",
+      });
+    } else {
+      // Adding new report
+      setEditingReport(null);
+      setReportFormData({
+        title: "",
+        description: "",
+        category: "",
+      });
+    }
     setSelectedReportImage(null);
     setIsReportModalOpen(true);
+  };
+
+  const openReportsListModal = (donation: Donation) => {
+    setReportDonation(donation);
+    setIsReportsListModalOpen(true);
   };
 
   const closeReportModal = () => {
     setIsReportModalOpen(false);
     setReportDonation(null);
+    setEditingReport(null);
     setReportFormData({
       title: "",
       description: "",
       category: "",
     });
     setSelectedReportImage(null);
+  };
+
+  const closeReportsListModal = () => {
+    setIsReportsListModalOpen(false);
+    setReportDonation(null);
   };
 
   const handleInputChange = (
@@ -284,29 +309,34 @@ const AdminDonations: React.FC = () => {
 
     if (!reportDonation) return;
 
-    console.log("Creating report for donation ID:", reportDonation.id);
-
     try {
       const reportData: ReportCreateModel = {
         title: reportFormData.title,
         description: reportFormData.description,
         category: reportFormData.category,
         img: "",
-        donationId: reportDonation.id, // This will be used for the API call
+        donationId: reportDonation.id,
         createdAt: new Date().toISOString(),
       };
 
-      // Add new report using the new endpoint
-      const result = await donationsApiService.addReportToDonation(
-        reportDonation.id,
-        reportData
-      );
+      if (editingReport) {
+        // Update existing report
+        console.log("Updating report:", editingReport.id);
+        // TODO: Implement update report API call when backend endpoint is available
+        showNotification("Оновлення звітів поки не реалізовано", "error");
+      } else {
+        // Create new report
+        console.log("Creating report for donation ID:", reportDonation.id);
+        const result = await donationsApiService.addReportToDonation(
+          reportDonation.id,
+          reportData
+        );
+        showNotification("Звіт успішно додано", "success");
 
-      showNotification("Звіт успішно додано", "success");
-
-      setDonations((prev) =>
-        prev.map((d) => (d.id === result.id ? result : d))
-      );
+        setDonations((prev) =>
+          prev.map((d) => (d.id === result.id ? result : d))
+        );
+      }
 
       closeReportModal();
     } catch (error) {
@@ -320,6 +350,14 @@ const AdminDonations: React.FC = () => {
   const deleteReport = async (donationId: number) => {
     // TODO: Implement report deletion when backend endpoint is available
     showNotification("Видалення звітів поки не реалізовано", "error");
+  };
+
+  const deleteIndividualReport = async (
+    donationId: number,
+    reportId: number
+  ) => {
+    // TODO: Implement individual report deletion when backend endpoint is available
+    showNotification("Видалення окремого звіту поки не реалізовано", "error");
   };
 
   const showNotification = (message: string, type: "success" | "error") => {
@@ -464,7 +502,7 @@ const AdminDonations: React.FC = () => {
                     </div>
                     <button
                       className="reports-button"
-                      onClick={() => openReportModal(donation)}
+                      onClick={() => openReportsListModal(donation)}
                       title="Переглянути звіти"
                     >
                       📊 Звіти про використання коштів (
@@ -650,7 +688,7 @@ const AdminDonations: React.FC = () => {
         <div className="modal-overlay" onClick={closeReportModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Додати звіт</h3>
+              <h3>{editingReport ? "Редагувати звіт" : "Додати звіт"}</h3>
               <button className="modal-close" onClick={closeReportModal}>
                 ×
               </button>
@@ -727,10 +765,117 @@ const AdminDonations: React.FC = () => {
                   Скасувати
                 </button>
                 <button type="submit" className="save-btn">
-                  Додати звіт
+                  {editingReport ? "Оновити звіт" : "Додати звіт"}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reports List Modal */}
+      {isReportsListModalOpen && reportDonation && (
+        <div className="modal-overlay" onClick={closeReportsListModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Звіти про використання коштів: {reportDonation.title}</h3>
+              <button className="modal-close" onClick={closeReportsListModal}>
+                ×
+              </button>
+            </div>
+
+            <div className="reports-list-container">
+              {reportDonation.reports && reportDonation.reports.length > 0 ? (
+                <div className="reports-list">
+                  {reportDonation.reports.map((report: any, index: number) => (
+                    <div key={index} className="report-item">
+                      <div className="report-content">
+                        <div className="report-header">
+                          <div className="report-meta">
+                            <p className="report-category">
+                              Категорія: {report.category}
+                            </p>
+                            <p className="report-date">
+                              Дата:{" "}
+                              {new Date(report.createdAt).toLocaleDateString(
+                                "uk-UA"
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="report-title-section">
+                          <p className="report-title-label">Назва</p>
+                          <h4>{report.title}</h4>
+                        </div>
+
+                        <div className="report-description-section">
+                          <p className="report-description-label">Опис</p>
+                          <p className="report-description">
+                            {report.description}
+                          </p>
+                        </div>
+
+                        {report.img && (
+                          <div className="report-image">
+                            <img
+                              src={report.img}
+                              alt={report.title}
+                              style={{ maxWidth: "200px", maxHeight: "150px" }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="report-actions">
+                        <button
+                          className="action-btn edit"
+                          onClick={() => {
+                            closeReportsListModal();
+                            openReportModal(reportDonation, report);
+                          }}
+                          title="Редагувати звіт"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="action-btn delete"
+                          onClick={() =>
+                            deleteIndividualReport(reportDonation.id, report.id)
+                          }
+                          title="Видалити звіт"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-reports">
+                  <p>Поки що немає звітів для цього збору.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="add-report-btn"
+                onClick={() => {
+                  closeReportsListModal();
+                  openReportModal(reportDonation);
+                }}
+              >
+                + Додати новий звіт
+              </button>
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={closeReportsListModal}
+              >
+                Закрити
+              </button>
+            </div>
           </div>
         </div>
       )}

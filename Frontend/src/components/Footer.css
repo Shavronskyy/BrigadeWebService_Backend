@@ -42,6 +42,13 @@
   color: #ffffff;
 }
 
+.facebook-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.2em;
+}
+
 .footer-separator {
   color: #666666;
   font-size: 0.9rem;
@@ -55,10 +62,12 @@
 }
 
 .facebook-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: #e0e0e0;
   transition: fill 0.3s ease;
+  vertical-align: middle;
+  margin-bottom: 1px;
 }
 
 .facebook-link:hover .facebook-icon {

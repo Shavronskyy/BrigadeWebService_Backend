@@ -14,7 +14,6 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  border-bottom: 2px solid var(--border-primary);
   min-height: 100vh;
   display: flex;
   align-items: center;

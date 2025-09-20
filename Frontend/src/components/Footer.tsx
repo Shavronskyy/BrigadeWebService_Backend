@@ -19,12 +19,12 @@ const Footer: React.FC = () => {
             <span className="footer-separator">|</span>
             <span className="footer-contact">+380 (93) 38 02 208</span>
             <span className="footer-separator">|</span>
-            <a href="mailto:brigade@army.mil.ua" className="footer-link">
-              brigade@army.mil.ua
+            <a href="mailto:arsenalsadn@ukr.net" className="footer-link">
+              arsenalsadn@ukr.net
             </a>
             <span className="footer-separator">|</span>
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/groups/546401331898688"
               className="footer-link facebook-link"
               target="_blank"
               rel="noopener noreferrer"

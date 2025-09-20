@@ -1,9 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Contacts.css";
 import contactsBackImage from "../img/backgrounds/Contacts/Contacts-back.jpg";
 import Footer from "./Footer";
+import { sendContactMessage, ContactFormData } from "../services/contactApi";
 
 const Contacts: React.FC = () => {
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+
+    try {
+      await sendContactMessage(formData);
+      setSubmitStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Failed to send contact message:", error);
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div
       className="kontakty-page"
@@ -33,11 +77,7 @@ const Contacts: React.FC = () => {
                 <div className="contact-icon">✉️</div>
                 <div className="contact-details">
                   <h3>Email</h3>
-                  <p>
-                    brigade@army.mil.ua
-                    <br />
-                    volunteer@army.mil.ua
-                  </p>
+                  <p>arsenalsadn@ukr.net</p>
                 </div>
               </div>
             </div>
@@ -45,7 +85,36 @@ const Contacts: React.FC = () => {
 
           <div className="contact-form-wide">
             <h2>Напишіть нам</h2>
-            <form className="form">
+            <form className="form" onSubmit={handleSubmit}>
+              {submitStatus === "success" && (
+                <div
+                  style={{
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  ✅ Повідомлення успішно надіслано!
+                </div>
+              )}
+              {submitStatus === "error" && (
+                <div
+                  style={{
+                    backgroundColor: "#f44336",
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  ❌ Помилка при надсиланні повідомлення. Спробуйте ще раз.
+                </div>
+              )}
+
               <div className="form-group">
                 <label htmlFor="name">Ім'я *</label>
                 <input
@@ -54,6 +123,9 @@ const Contacts: React.FC = () => {
                   name="name"
                   required
                   placeholder="Ваше ім'я"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -65,6 +137,9 @@ const Contacts: React.FC = () => {
                   name="email"
                   required
                   placeholder="Ваш email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -75,6 +150,9 @@ const Contacts: React.FC = () => {
                   id="phone"
                   name="phone"
                   placeholder="Ваш телефон"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -86,11 +164,22 @@ const Contacts: React.FC = () => {
                   rows={5}
                   required
                   placeholder="Ваше повідомлення"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
                 ></textarea>
               </div>
 
-              <button type="submit" className="submit-btn">
-                Надіслати повідомлення
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={isSubmitting}
+                style={{
+                  opacity: isSubmitting ? 0.7 : 1,
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                }}
+              >
+                {isSubmitting ? "Надсилання..." : "Надіслати повідомлення"}
               </button>
             </form>
           </div>

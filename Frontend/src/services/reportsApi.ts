@@ -34,7 +34,15 @@ class ReportsApiService {
     try {
       const response = await fetch(`${this.baseUrl}/getAll`);
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
@@ -70,8 +78,17 @@ class ReportsApiService {
         },
         body: JSON.stringify(report),
       });
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
@@ -79,7 +96,54 @@ class ReportsApiService {
         throw new Error(errorMessage);
       }
 
-      const result: any = await response.json();
+      // Check if response has content before parsing JSON
+      const responseText = await response.text();
+
+      if (
+        !responseText ||
+        responseText.trim() === "" ||
+        responseText.trim() === "OK"
+      ) {
+        // Backend returns just Ok() - create result from input data
+        const result = {
+          id: Date.now(), // Temporary ID - will be updated after image upload
+          title: report.title,
+          description: report.description,
+          shortDescription: report.shortDescription,
+          category: report.category,
+          img: report.img,
+          isPublished: report.isPublished,
+          createdAt: report.createdAt,
+        };
+        return {
+          ...result,
+          img: this.formatImageUrl(result.img),
+        };
+      }
+
+      let result: any;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn(
+          "Failed to parse JSON response, creating minimal result:",
+          parseError
+        );
+        const minimalResult = {
+          id: Date.now(), // Temporary ID
+          title: report.title,
+          description: report.description,
+          shortDescription: report.shortDescription,
+          category: report.category,
+          img: report.img,
+          isPublished: report.isPublished,
+          createdAt: report.createdAt,
+        };
+        return {
+          ...minimalResult,
+          img: this.formatImageUrl(minimalResult.img),
+        };
+      }
 
       // Format image URL
       return {
@@ -101,8 +165,17 @@ class ReportsApiService {
         },
         body: JSON.stringify(report),
       });
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
@@ -110,7 +183,34 @@ class ReportsApiService {
         throw new Error(errorMessage);
       }
 
-      const result: any = await response.json();
+      // Check if response has content before parsing JSON
+      const responseText = await response.text();
+
+      if (
+        !responseText ||
+        responseText.trim() === "" ||
+        responseText.trim() === "OK"
+      ) {
+        // Backend returns just Ok() - return the input report as result
+        return {
+          ...report,
+          img: this.formatImageUrl(report.img),
+        } as Report;
+      }
+
+      let result: any;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn(
+          "Failed to parse JSON response, using input data:",
+          parseError
+        );
+        return {
+          ...report,
+          img: this.formatImageUrl(report.img),
+        } as Report;
+      }
 
       // Format image URL
       return {
@@ -129,7 +229,15 @@ class ReportsApiService {
         method: "DELETE",
       });
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
@@ -156,7 +264,15 @@ class ReportsApiService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
@@ -164,7 +280,28 @@ class ReportsApiService {
         throw new Error(errorMessage);
       }
 
-      const result = await response.json();
+      // Check if response has content before parsing JSON
+      const responseText = await response.text();
+
+      if (!responseText || responseText.trim() === "") {
+        // If no response body, create a minimal result object
+        return {
+          url: "", // Empty URL if no response
+        };
+      }
+
+      let result: any;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn(
+          "Failed to parse JSON response in uploadImage:",
+          parseError
+        );
+        return {
+          url: "", // Empty URL if parsing fails
+        };
+      }
 
       // Convert relative URL to absolute URL if needed
       if (result.url && !result.url.startsWith("http")) {
@@ -185,7 +322,15 @@ class ReportsApiService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          const responseText = await response.text();
+          if (responseText && responseText.trim() !== "") {
+            errorData = JSON.parse(responseText);
+          }
+        } catch {
+          // If JSON parsing fails, use empty object
+        }
         const errorMessage =
           errorData.message ||
           errorData.title ||
